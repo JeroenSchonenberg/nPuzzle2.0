@@ -3,7 +3,6 @@ package nl.han.ica.mad.s478416.npuzzle.activities.gametypes;
 import android.content.Intent;
 import android.os.Handler;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout;
@@ -65,7 +64,7 @@ public class SingleplayerGameActivity extends AbstractGameActivity implements IP
 		} else {
 			locked = true;
 			new Handler().postDelayed(new Runnable() {
-				@Override public void run() { view.hideCompletedPuzzle(); }
+				@Override public void run() { view.fadeOutCompletedPuzzle(); }
 			}, HIDE_COMPLETED_PUZZLE_DELAY);
 			new Handler().postDelayed(new Runnable() {
 				@Override public void run() { shuffle(view, model, ShuffleUtil.genShuffleSequence(0, 0, 0)); }
@@ -100,7 +99,7 @@ public class SingleplayerGameActivity extends AbstractGameActivity implements IP
 	}
 
 	public void onPuzzleFinished(final PuzzleModel model){
-		view.showCompletedPuzzle();
+		view.fadeInCompletedPuzzle();
 		locked = true;
 
 		new Handler().postDelayed(new Runnable() {

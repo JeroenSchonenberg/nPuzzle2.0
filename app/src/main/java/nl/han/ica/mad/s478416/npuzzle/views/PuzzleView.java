@@ -22,9 +22,11 @@ import nl.han.ica.mad.s478416.npuzzle.utils.BitmapUtils;
  */
 public class PuzzleView extends RelativeLayout {
 	private static final int BG_COLOR = Color.argb(225,0,0,0);
-	public static final int PIECE_MARGIN = 2;                        	// in px
-    public static final int ANIM_SLIDE_DURATION = 40;                 	// in ms
-	public static final int ANIM_COMPLETED_PUZZLE_ALPHA_DURATION = 500;	// in ms
+	private static final int PIECE_MARGIN = 2;                        					// in px
+    public static final int ANIM_SLIDE_DURATION = 40;                 					// in ms
+	public static final int ANIM_COMPLETED_PUZZLE_ALPHA_DURATION = 500;					// in ms
+	private static final int PICASSO_FADE_DURATION = 200;								// in ms
+	private static final int PUZZLE_PIECE_FADE_DURATION = PICASSO_FADE_DURATION + 25;	// in ms
 
 	private ArrayList<IPuzzleViewObserver> observers;
 
@@ -42,7 +44,6 @@ public class PuzzleView extends RelativeLayout {
         super(context, null, 0);
 
 		observers = new ArrayList<>();
-
 		this.bitmapsInitialized = false;
 
         this.setBackgroundColor(BG_COLOR);
@@ -52,7 +53,6 @@ public class PuzzleView extends RelativeLayout {
 		this.pieces = new PuzzlePiece[gridSize * gridSize - 1];
 		for(int i = 0; i < pieces.length; i++){
 			this.pieces[i] = new PuzzlePiece(getContext(), i);
-			this.addView(pieces[i]);
 		}
 
 		this.completedPuzzle = new ImageView(getContext());
@@ -79,18 +79,20 @@ public class PuzzleView extends RelativeLayout {
 			.load(baseImageResourceId)
 			.resize(getLayoutParams().width, getLayoutParams().width)
 			.into(completedPuzzle, new Callback.EmptyCallback() {
-				@Override public void onSuccess() { notifyObservers(); }
+				@Override
+				public void onSuccess() {
+					completedPuzzleLoaded();
+				}
 			});
 
 		int baseImageWidth = getLayoutParams().width - (PIECE_MARGIN * (gridSize - 1));
-		this.pieceWidth = baseImageWidth / gridSize;
-
 		Bitmap baseImage = BitmapUtils.scaledBitmapFromResource(getResources(), baseImageResourceId, baseImageWidth, baseImageWidth);
+
+		this.pieceWidth = baseImageWidth / gridSize;
 		Bitmap[] pieceBitmaps = BitmapUtils.sliceAsGrid(baseImage, gridSize);
 
 		for(int i = 0; i < pieces.length; i++){
 			pieces[i].setImageBitmap(pieceBitmaps[i]);
-
 			int initialSlot = (initialArrangement != null) ? java.util.Arrays.asList(initialArrangement).indexOf(i) : i;
 			setPiecePosition(pieces[i], calcSlotX(initialSlot), calcSlotY(initialSlot));
 		}
@@ -98,18 +100,37 @@ public class PuzzleView extends RelativeLayout {
 		bitmapsInitialized = true;
     }
 
+	private void completedPuzzleLoaded(){
+		for(PuzzlePiece p : pieces){
+			this.addView(p);
+
+
+			// fade in the pieces almost simultaneously with Picasso's fade of completedImage
+			AlphaAnimation a = new AlphaAnimation(0.0f, 1.0f);
+			a.setDuration(PUZZLE_PIECE_FADE_DURATION);
+			a.setFillAfter(true);
+			p.startAnimation(a);
+		}
+
+		notifyObservers();
+	}
+
 	public void setOnPieceClickListener(OnClickListener listener){
 		for(PuzzlePiece p : pieces){
 				p.setOnClickListener(listener);
 		}
 	}
 
-	public void showCompletedPuzzle(){
+	public void fadeInCompletedPuzzle(){
 		fadeCompletedPuzzle( new AlphaAnimation(0.0f, 1.0f) );
 	}
 
-	public void hideCompletedPuzzle(){
+	public void fadeOutCompletedPuzzle(){
 		fadeCompletedPuzzle( new AlphaAnimation(1.0f, 0.0f) );
+	}
+
+	public void hideCompletedPuzzle(){
+		completedPuzzle.setVisibility(INVISIBLE);
 	}
 
 	public void animateSlidePieceToSlot(int pieceNumber, int targetSlot){
@@ -148,6 +169,7 @@ public class PuzzleView extends RelativeLayout {
 	}
 
 	private void fadeCompletedPuzzle(AlphaAnimation baseAnimation){
+		completedPuzzle.setVisibility(VISIBLE);
 		baseAnimation.setDuration(ANIM_COMPLETED_PUZZLE_ALPHA_DURATION);
 		baseAnimation.setFillAfter(true);
 		completedPuzzle.startAnimation(baseAnimation);
