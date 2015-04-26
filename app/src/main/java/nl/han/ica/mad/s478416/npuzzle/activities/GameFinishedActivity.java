@@ -15,15 +15,14 @@ import butterknife.ButterKnife;
 import butterknife.InjectView;
 import nl.han.ica.mad.s478416.npuzzle.R;
 import nl.han.ica.mad.s478416.npuzzle.model.Difficulty;
-import nl.han.ica.mad.s478416.npuzzle.SavegameManager;
 
 public class GameFinishedActivity extends Activity implements View.OnClickListener {
 	@InjectView(R.id.container)			LinearLayout container;
 	@InjectView(R.id.puzzleImage)		ImageView puzzleImage;
 
-    @InjectView(R.id.difficultyValue) 	TextView lblDifficultyValue;
-	@InjectView(R.id.movesValue) 		TextView lblMovesValue;
-	@InjectView(R.id.timeValue) 		TextView lblTimeValue;
+    @InjectView(R.id.difficultyValue) 	TextView textViewDifficulty;
+	@InjectView(R.id.movesValue) 		TextView textViewMoves;
+	@InjectView(R.id.timeValue) 		TextView textViewTime;
 
 	@InjectView(R.id.btn_new_game)  	Button buttonNewGame;
 	@InjectView(R.id.btn_main_menu)  	Button buttonMainMenu;
@@ -49,9 +48,9 @@ public class GameFinishedActivity extends Activity implements View.OnClickListen
 				.resize(container.getMeasuredWidth(), container.getMeasuredWidth())
 				.into(puzzleImage);
 
-        lblDifficultyValue.setText(difficulty.toString());
-        lblMovesValue.setText(Integer.toString(movesCount));
-		lblTimeValue.setText(time + " ms");
+        textViewDifficulty.setText(difficulty.toString());
+        textViewMoves.setText(Integer.toString(movesCount));
+		textViewTime.setText(time + " ms");
 
         buttonNewGame.setOnClickListener(this);
         buttonMainMenu.setOnClickListener(this);
@@ -71,7 +70,7 @@ public class GameFinishedActivity extends Activity implements View.OnClickListen
 
 	@Override
 	public void onBackPressed(){
-		return; // back to main menu?
+		startActivityDiscardStack(MainMenuActivity.class);
 	}
 
     private void startActivityDiscardStack(Class c){
