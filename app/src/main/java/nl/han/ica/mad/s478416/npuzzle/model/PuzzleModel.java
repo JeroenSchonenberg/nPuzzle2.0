@@ -62,7 +62,7 @@ public class PuzzleModel {
 		moveHistory.push(pieceId);
 		startTime = (startTime == null) ? System.nanoTime() : startTime; // start timer if not yet started
 
-		if (this.isFinished()) notifyObservers();
+		if (this.isFinished() && this.isShuffled) notifyObservers();
     }
 
     private boolean isFinished(){
