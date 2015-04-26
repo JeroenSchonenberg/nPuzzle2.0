@@ -21,11 +21,7 @@ public class SavegameManager {
     }
 
     public boolean saveGameExists(){
-        if(prefs.getInt(IMG_KEY, -1) != -1){
-            return true;
-        }
-
-        return false;
+		return (prefs.getInt(IMG_KEY, -1) != -1);
     }
 
     public int getSavedImgResId(){
@@ -41,14 +37,12 @@ public class SavegameManager {
     }
 
     public Integer[] getSavedArrangement(){
-        Difficulty difficulty = getSavedDifficulty();
+		String[] sArrangement = prefs.getString(ARRANGEMENT_KEY, null).split(",");
 
-        String[] stateStr = prefs.getString(ARRANGEMENT_KEY, null).split(",");
-        Integer[] state = new Integer[difficulty.getGridSize() * difficulty.getGridSize()];
-        for(int i = 0; i < stateStr.length; i++) {
-            if(!stateStr[i].isEmpty()){
-                state[i] = Integer.parseInt(stateStr[i]);
-            }
+        Difficulty difficulty = getSavedDifficulty();
+		Integer[] state = new Integer[difficulty.getGridSize() * difficulty.getGridSize()];
+        for(int i = 0; i < sArrangement.length; i++) {
+            if (!sArrangement[i].isEmpty()) state[i] = Integer.parseInt(sArrangement[i]);
         }
 
         return state;
@@ -57,12 +51,10 @@ public class SavegameManager {
     public void save(int imgResId, Difficulty difficulty, Integer[] arrangement, int moves){
         String sArrangement = "";
         for(Integer i : arrangement){
-            if(i != null){
-				sArrangement += i;
-            }
+            if (i != null) sArrangement += i;
 			sArrangement += ",";
         }
-		sArrangement = sArrangement.substring(0, sArrangement.length()-1);// remove last ","
+		sArrangement = sArrangement.substring(0, sArrangement.length() - 1); // remove last ","
 
         editor.putInt(IMG_KEY, imgResId);
         editor.putString(DIFFICULTY_KEY, difficulty.toString());

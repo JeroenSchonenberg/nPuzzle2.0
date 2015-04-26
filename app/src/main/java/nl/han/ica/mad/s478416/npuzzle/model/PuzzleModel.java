@@ -2,44 +2,36 @@ package nl.han.ica.mad.s478416.npuzzle.model;
 
 import java.util.ArrayList;
 import java.util.Stack;
+import java.util.concurrent.TimeUnit;
 
-/**
- * Created by Jeroen Schonenberg (478416) on 27/03/15.
- */
 public class PuzzleModel {
 	private ArrayList<IPuzzleModelObserver> observers;
 
     private int imageResId;
     private Difficulty difficulty;
-    private int moves;
 	private boolean isShuffled;
+    private int moves;
     private Integer[] arrangement;
 	private Stack moveHistory;
-	private long startTime = 0;
-	private long endTime;
+	private Long startTime;
+	private Long endTime;
 
-    public PuzzleModel(int imageResId, Difficulty difficulty, boolean isShuffled){
+    public PuzzleModel(int imageResId, Difficulty difficulty, boolean isShuffled, int moves, Integer[] arrangement){
 		this.observers = new ArrayList<>();
+		this.moveHistory = new Stack();
 
         this.imageResId = imageResId;
         this.difficulty = difficulty;
 		this.isShuffled = isShuffled;
-		this.moves = 0;
-		this.moveHistory = new Stack();
-        this.arrangement = new Integer[difficulty.getGridSize() * difficulty.getGridSize()];
-
-		// setup default arrangement
-		for(int i = 0; i < arrangement.length - 1; i++){
-			arrangement[i] = i;
-		}
-    }
-
-	public PuzzleModel(int imageResId, Difficulty difficulty, boolean shuffled, int moves, Integer[] arrangement) {
-		this(imageResId, difficulty, shuffled);
-
 		this.moves = moves;
-		if (arrangement != null) this.arrangement = arrangement;
-	}
+
+		if(arrangement != null){
+			this.arrangement = arrangement;
+		} else { // use default arrangement
+			this.arrangement = new Integer[difficulty.getGridSize() * difficulty.getGridSize()];
+			for (int i = 0; i < this.arrangement.length - 1; i++) this.arrangement[i] = i;
+		}
+    };
 
     public boolean pieceNeighboursEmptySlot(int pieceId){
         int pieceSlot = getPieceSlot(pieceId);
@@ -64,24 +56,29 @@ public class PuzzleModel {
 
         moves++;
 		moveHistory.push(pieceId);
-		if (startTime == 0) startTime = System.nanoTime();	// start timer if not yet started
+		startTime = (startTime == null) ? System.nanoTime() : startTime; // start timer if not yet started
 
 		if (this.isFinished()) notifyObservers();
     }
 
     private boolean isFinished(){
         for(int i = 0; i < arrangement.length; i++){
-            if(arrangement[i] != null && arrangement[i] != i) { // volgorde niet veranderen lol
-                    return false;
-            }
+            if (arrangement[i] != null && arrangement[i] != i) return false;
         }
 
 		endTime = System.nanoTime();
-
         return true;
     }
 
-	/* SIMPLE GET & SET */
+	public int getTime(){
+		if(startTime != null && endTime != null){	// game is finished
+			return (int) TimeUnit.MILLISECONDS.convert(endTime - startTime, TimeUnit.NANOSECONDS);
+		} else if (startTime != null){				// game is not yet finished but it has started
+			return (int) TimeUnit.MILLISECONDS.convert(System.nanoTime() - startTime, TimeUnit.NANOSECONDS);
+		} else {									// game hasn't even started yet
+			return 0;
+		}
+	}
 
 	public void setMoveCount(int moveCount){
 		this.moves = moveCount;
@@ -95,12 +92,8 @@ public class PuzzleModel {
 		return java.util.Arrays.asList(arrangement).indexOf(null);
     }
 
-	public int getTime(){
-		return (int)((endTime - startTime) / 1000000); // return the time it took to solve the puzzle, in ms
-	}
-
 	public void resetTimer(){
-		startTime = 0;
+		startTime = null;
 	}
 
     public int getPieceSlot(int pieceId){
@@ -123,7 +116,9 @@ public class PuzzleModel {
         return difficulty;
     }
 
-	public boolean isShuffled(){ return isShuffled; }
+	public boolean isShuffled(){
+		return isShuffled;
+	}
 
 	public void setShuffled(){
 		this.isShuffled = true;

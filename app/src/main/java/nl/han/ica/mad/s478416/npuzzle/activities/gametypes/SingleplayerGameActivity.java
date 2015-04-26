@@ -16,9 +16,6 @@ import nl.han.ica.mad.s478416.npuzzle.model.*;
 import nl.han.ica.mad.s478416.npuzzle.utils.*;
 import nl.han.ica.mad.s478416.npuzzle.views.*;
 
-/**
- * Created by Jeroen Schonenberg (478416) on 27/03/15.
- */
 public class SingleplayerGameActivity extends AbstractGameActivity implements IPuzzleModelObserver, IPuzzleViewObserver {
     private static final int TO_YOU_WIN_ACTIVITY_DELAY = 1500;
 	private static final int HIDE_COMPLETED_PUZZLE_DELAY = 1000;                            // in ms
@@ -40,11 +37,10 @@ public class SingleplayerGameActivity extends AbstractGameActivity implements IP
 		this.savegameManager = new SavegameManager(getApplicationContext());
 
 		// check if we're resuming a game or starting a new one
-        Intent intent = getIntent();
-        Boolean resumeGame = intent.getBooleanExtra(getString(R.string.key_resume_game), false);
-		// collect parameters needed to (re)construct the puzzle
-        int imgResId 			= resumeGame ? savegameManager.getSavedImgResId() 		: intent.getIntExtra(getString(R.string.key_image), 0);
-		Difficulty difficulty 	= resumeGame ? savegameManager.getSavedDifficulty() 	: (Difficulty) intent.getSerializableExtra(getString(R.string.key_difficulty));
+        Intent i = getIntent();
+        Boolean resumeGame = i.getBooleanExtra(getString(R.string.key_resume_game), false);
+        int imgResId 			= resumeGame ? savegameManager.getSavedImgResId() 		: i.getIntExtra(getString(R.string.key_image), 0);
+		Difficulty difficulty 	= resumeGame ? savegameManager.getSavedDifficulty() 	: (Difficulty) i.getSerializableExtra(getString(R.string.key_difficulty));
 		int moveCount 			= resumeGame ? savegameManager.getSavedMoveCount() 		: 0;
 		Integer[] arrangement	= resumeGame ? savegameManager.getSavedArrangement()	: null;
 
