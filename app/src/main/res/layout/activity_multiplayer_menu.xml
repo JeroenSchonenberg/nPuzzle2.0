@@ -10,7 +10,8 @@
     <RelativeLayout
         android:layout_width="0dip"
         android:layout_height="fill_parent"
-        android:layout_weight="@dimen/container_weight">
+        android:layout_weight="@dimen/container_weight"
+        android:layout_marginBottom="@dimen/container_bottom_margin">
         <LinearLayout
             android:orientation="vertical"
             android:layout_width="fill_parent"

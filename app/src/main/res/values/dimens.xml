@@ -11,5 +11,6 @@
     <dimen name="button_text_size">18dp</dimen>
 
     <item name="container_weight" type="dimen" format="float">0.62</item>
+    <dimen name="container_bottom_margin">32dp</dimen>
     <item name="container_margin_weight" type="dimen" format="float">0.19</item>
 </resources>
