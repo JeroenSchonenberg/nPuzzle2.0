@@ -11,6 +11,8 @@ import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 
+import java.util.concurrent.TimeUnit;
+
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import nl.han.ica.mad.s478416.npuzzle.R;
@@ -36,15 +38,17 @@ public class GameFinishedActivity extends Activity implements View.OnClickListen
 
 		new SavegameManager(getApplicationContext()).deleteSavegame();
 
-		// retrieve game data from intent
+		// RETRIEVE DATA FROM INTENT
         Intent i = getIntent();
         int imgResId = i.getIntExtra(getString(R.string.key_image), 0);
         Difficulty difficulty = (Difficulty)i.getSerializableExtra(getString(R.string.key_difficulty));
         int movesCount = i.getIntExtra(getString(R.string.key_moves_count), 0);
-		int time = i.getIntExtra(getString(R.string.key_time), 0);
+		int timeMilliseconds = i.getIntExtra(getString(R.string.key_time), 0);
+		float timeSeconds = ((float) timeMilliseconds) / 1000;
 
-		// setup ui
+		// SETUP UI
 		container.measure(0, 0);
+
 		Picasso.with(this)
 				.load(imgResId)
 				.placeholder(R.drawable.placeholder_puzzle_image)
@@ -53,7 +57,7 @@ public class GameFinishedActivity extends Activity implements View.OnClickListen
 
         textViewDifficulty.setText(difficulty.toString());
         textViewMoves.setText(Integer.toString(movesCount));
-		textViewTime.setText(time + " " + getString(R.string.milliseconds_suffix));
+		textViewTime.setText(String.format("%.2f", timeSeconds) + getString(R.string.seconds_suffix));
 
         buttonNewGame.setOnClickListener(this);
         buttonMainMenu.setOnClickListener(this);

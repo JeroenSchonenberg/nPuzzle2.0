@@ -3,7 +3,6 @@ package nl.han.ica.mad.s478416.npuzzle.views;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Color;
-import android.util.Log;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.view.animation.Transformation;
@@ -23,8 +22,8 @@ import nl.han.ica.mad.s478416.npuzzle.utils.BitmapUtils;
 public class PuzzleView extends RelativeLayout {
 	private static final int BG_COLOR = Color.argb(225,0,0,0);
 	private static final int PIECE_MARGIN = 2;                        					// in px
-    public static final int ANIM_SLIDE_DURATION = 40;                 					// in ms
-	public static final int ANIM_COMPLETED_PUZZLE_ALPHA_DURATION = 500;					// in ms
+    public static final int ANIM_SLIDE_DURATION = 60;                 					// in ms
+	public static final int COMPLETED_PUZZLE_FADE_DURATION = 500;						// in ms
 	private static final int PICASSO_FADE_DURATION = 200;								// in ms
 	private static final int PUZZLE_PIECE_FADE_DURATION = PICASSO_FADE_DURATION + 25;	// in ms
 
@@ -64,11 +63,9 @@ public class PuzzleView extends RelativeLayout {
     @Override
     public void onSizeChanged (int width, int height, int oldWidth, int oldHeight){
         super.onSizeChanged(width, height, oldWidth, oldHeight);
-
         LayoutParams params = new LayoutParams(width, width);
         params.addRule(RelativeLayout.CENTER_HORIZONTAL);
         this.setLayoutParams(params);
-
         initBitmaps();
     }
 
@@ -104,7 +101,6 @@ public class PuzzleView extends RelativeLayout {
 		for(PuzzlePiece p : pieces){
 			this.addView(p);
 
-
 			// fade in the pieces almost simultaneously with Picasso's fade of completedImage
 			AlphaAnimation a = new AlphaAnimation(0.0f, 1.0f);
 			a.setDuration(PUZZLE_PIECE_FADE_DURATION);
@@ -116,9 +112,7 @@ public class PuzzleView extends RelativeLayout {
 	}
 
 	public void setOnPieceClickListener(OnClickListener listener){
-		for(PuzzlePiece p : pieces){
-				p.setOnClickListener(listener);
-		}
+		for (PuzzlePiece p : pieces) p.setOnClickListener(listener);
 	}
 
 	public void fadeInCompletedPuzzle(){
@@ -170,7 +164,7 @@ public class PuzzleView extends RelativeLayout {
 
 	private void fadeCompletedPuzzle(AlphaAnimation baseAnimation){
 		completedPuzzle.setVisibility(VISIBLE);
-		baseAnimation.setDuration(ANIM_COMPLETED_PUZZLE_ALPHA_DURATION);
+		baseAnimation.setDuration(COMPLETED_PUZZLE_FADE_DURATION);
 		baseAnimation.setFillAfter(true);
 		completedPuzzle.startAnimation(baseAnimation);
 	}
