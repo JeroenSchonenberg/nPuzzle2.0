@@ -50,7 +50,7 @@ public class GameFinishedActivity extends Activity implements View.OnClickListen
 
         textViewDifficulty.setText(difficulty.toString());
         textViewMoves.setText(Integer.toString(movesCount));
-		textViewTime.setText(time + " ms");
+		textViewTime.setText(time + " " + getString(R.string.milliseconds_suffix));
 
         buttonNewGame.setOnClickListener(this);
         buttonMainMenu.setOnClickListener(this);

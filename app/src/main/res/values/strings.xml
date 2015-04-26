@@ -13,6 +13,8 @@
     <string name="move_count">moves</string>
     <string name="difficulty">difficulty</string>
     <string name="time">time</string>
+    <string name="milliseconds_suffix">ms</string>
+    <string name="seconds_suffix">s</string>
 
     <!-- button labels -->
     <string name="singleplayer_game">singleplayer</string>
