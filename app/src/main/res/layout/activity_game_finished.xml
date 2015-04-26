@@ -23,7 +23,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textAppearance="?android:attr/textAppearanceLarge"
-                android:text="@string/title_activity_you_win"
+                android:text="@string/game_finished_title"
                 android:id="@+id/puzzle_complete"
                 android:elegantTextHeight="false"
                 android:textStyle="bold"

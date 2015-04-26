@@ -11,7 +11,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="@string/title_activity_select_image"
+        android:text="@string/select_image_title"
         android:id="@+id/instruction"
         android:elegantTextHeight="false"
         android:layout_span="2"

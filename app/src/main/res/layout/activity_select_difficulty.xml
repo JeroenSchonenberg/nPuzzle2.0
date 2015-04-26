@@ -25,7 +25,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textAppearance="?android:attr/textAppearanceLarge"
-                android:text="@string/title_activity_select_difficulty"
+                android:text="@string/select_difficulty_title"
                 android:id="@+id/textView3"
                 android:elegantTextHeight="false"
                 android:textStyle="bold"

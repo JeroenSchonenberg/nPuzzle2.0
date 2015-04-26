@@ -24,7 +24,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textAppearance="?android:attr/textAppearanceLarge"
-                android:text="@string/title_activity_select_multiplayer_type"
+                android:text="@string/multiplayer_menu_title"
                 android:id="@+id/game_title"
                 android:elegantTextHeight="false"
                 android:textStyle="bold"
@@ -36,7 +36,7 @@
             <Button
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/versus_game"
+                android:text="@string/versus"
                 android:id="@+id/btn_new_versus_game"
                 android:paddingTop="@dimen/default_button_padding"
                 android:paddingBottom="@dimen/default_button_padding"
@@ -45,7 +45,7 @@
             <Button
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/coop_game"
+                android:text="@string/coop"
                 android:id="@+id/btn_new_coop_game"
                 android:paddingTop="@dimen/default_button_padding"
                 android:paddingBottom="@dimen/default_button_padding"

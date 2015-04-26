@@ -2,38 +2,37 @@
     <string name="app_name">nPuzzle</string>
 
     <!-- activity titles -->
-    <string name="title_activity_main_menu">n-puzzle</string>
-    <string name="title_activity_select_image">pick a puzzle</string>
-    <string name="title_activity_select_difficulty">pick a difficulty</string>
-    <string name="title_activity_gameplay">Puzzle</string>
-    <string name="title_activity_you_win">puzzle complete!</string>
-    <string name="title_activity_select_multiplayer_type">pick a mode</string>
+    <string name="main_menu_title">n-puzzle</string>
+    <string name="multiplayer_menu_title">pick a mode</string>
+    <string name="select_image_title">pick a puzzle</string>
+    <string name="select_difficulty_title">pick a difficulty</string>
+    <string name="game_finished_title">puzzle complete!</string>
 
-    <!-- text labels -->
+    <!-- (button/text) labels -->
+    <string name="main_menu">main menu</string>
+    <string name="credits">credits</string>
+    <string name="new_game">new game</string>
+    <string name="resume_game">resume game</string>
+    <string name="quit_game">quit game</string>
+
     <string name="move_count">moves</string>
+
+    <string name="reshuffle">Reshuffle</string>
+
     <string name="difficulty">difficulty</string>
+    <string name="change_difficulty">Change difficulty</string>
+    <string name="difficulty_easy">Easy</string>
+    <string name="difficulty_normal">Normal</string>
+    <string name="difficulty_hard">Hard</string>
+
     <string name="time">time</string>
     <string name="milliseconds_suffix">ms</string>
     <string name="seconds_suffix">s</string>
 
-    <!-- button labels -->
-    <string name="singleplayer_game">singleplayer</string>
-    <string name="multiplayer_game">multiplayer</string>
+    <string name="multiplayer">multiplayer</string>
+    <string name="versus">versus</string>
+    <string name="coop">co-op</string>
 
-    <string name="new_game">new game</string>
-    <string name="resume_game">resume game</string>
-    <string name="credits">credits</string>
-    <string name="main_menu">main menu</string>
-    <string name="versus_game">versus</string>
-    <string name="coop_game">co-op</string>
-
-    <!-- menu item labels -->
-    <string name="action_reshuffle">Reshuffle</string>
-    <string name="action_change_difficulty">Change difficulty</string>
-    <string name="difficulty_easy">Easy</string>
-    <string name="difficulty_normal">Normal</string>
-    <string name="difficulty_hard">Hard</string>
-    <string name="action_quit_puzzle">Quit puzzle</string>
 
     <!-- Intent keys -->
     <string name="key_resume_game">resumeGame</string>
@@ -41,11 +40,4 @@
     <string name="key_difficulty">difficulty</string>
     <string name="key_moves_count">movesCount</string>
     <string name="key_time">timeToSolve</string>
-
-    <string name="hello_world">Hello world!</string>
-    <string name="action_settings">Settings</string>
-    <string name="title_activity_abstract_multiplayer_game">AbstractMultiplayerGameActivity</string>
-    <string name="title_activity_abstract_game">AbstractGameActivity</string>
-    <string name="title_activity_singleplayer_menu">Singleplayer Menu</string>
-    <string name="title_activity_multiplayer_menu">Multiplayer Menu</string>
 </resources>
