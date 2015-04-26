@@ -48,8 +48,6 @@
                 android:useDefaultMargins="true"
                 android:paddingTop="@dimen/default_padding"
                 android:paddingBottom="@dimen/default_padding"
-                android:layout_marginLeft="@dimen/default_padding"
-                android:layout_marginRight="@dimen/default_padding"
                 android:id="@+id/grid">
 
                 <TextView
