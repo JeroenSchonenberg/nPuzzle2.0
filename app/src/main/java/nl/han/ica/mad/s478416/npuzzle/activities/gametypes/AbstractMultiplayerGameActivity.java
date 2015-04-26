@@ -15,11 +15,11 @@ import nl.han.ica.mad.s478416.npuzzle.utils.ByteUtils;
 
 public abstract class AbstractMultiplayerGameActivity extends AbstractGameActivity implements GoogleApiClient.ConnectionCallbacks,
 		GoogleApiClient.OnConnectionFailedListener, RealTimeMessageReceivedListener{
-	private static final char READY = 'R';
-	private static final char SHUFFLE = 'S';
-	private static final char MOVE = 'M';
-	private static final char FINISHED = 'F';
-	private static final char QUIT = 'Q';
+	private static final char READY 	= 'R';
+	private static final char SHUFFLE	= 'S';
+	private static final char MOVE 		= 'M';
+	private static final char FINISHED 	= 'F';
+	private static final char QUIT 		= 'Q';
 
 	private GoogleApiClient googleApiClient;
 	private String roomId;
@@ -71,12 +71,12 @@ public abstract class AbstractMultiplayerGameActivity extends AbstractGameActivi
 	protected abstract void onOpponentFinished(int time);
 	protected abstract void onOpponentQuit();
 
-	private void sendReady(){
+	protected void sendReady(){
 		byte[] msg = { (byte) READY };
 		Games.RealTimeMultiplayer.sendReliableMessage(googleApiClient, null, msg, roomId, opponent.getParticipantId());
 	}
 
-	private void sendShuffleSequence(int[] sequence){
+	protected void sendShuffleSequence(int[] sequence){
 		byte[] msg = new byte[sequence.length + 1];
 		msg[0] = (byte) SHUFFLE;
 		for(int i = 0; i <= sequence.length; i++){
@@ -85,18 +85,18 @@ public abstract class AbstractMultiplayerGameActivity extends AbstractGameActivi
 		Games.RealTimeMultiplayer.sendReliableMessage(googleApiClient, null, msg, roomId, opponent.getParticipantId());
 	}
 
-	private void sendMove(int pieceId){
+	protected void sendMove(int pieceId){
 		byte[] msg = { (byte) MOVE, (byte) pieceId };
 		Games.RealTimeMultiplayer.sendReliableMessage(googleApiClient, null, msg, roomId, opponent.getParticipantId());
 	}
 
-	private void sendFinished(int time){
+	protected void sendFinished(int time){
 		byte[] timeByteArray = ByteUtils.intToByteArray(time);
 		byte[] msg = { (byte) FINISHED, timeByteArray[0], timeByteArray[1], timeByteArray[2], timeByteArray[3] };
 		Games.RealTimeMultiplayer.sendReliableMessage(googleApiClient, null, msg, roomId, opponent.getParticipantId());
 	}
 
-	private void sendQuit(){
+	protected void sendQuit(){
 		byte[] msg = { (byte) QUIT };
 		Games.RealTimeMultiplayer.sendReliableMessage(googleApiClient, null, msg, roomId, opponent.getParticipantId());
 	}

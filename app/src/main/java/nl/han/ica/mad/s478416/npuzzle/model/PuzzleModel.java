@@ -31,7 +31,11 @@ public class PuzzleModel {
 			this.arrangement = new Integer[difficulty.getGridSize() * difficulty.getGridSize()];
 			for (int i = 0; i < this.arrangement.length - 1; i++) this.arrangement[i] = i;
 		}
-    };
+    }
+
+	public int getPiece(int slot){
+		return arrangement[slot];
+	}
 
     public boolean pieceNeighboursEmptySlot(int pieceId){
         int pieceSlot = getPieceSlot(pieceId);
@@ -122,6 +126,10 @@ public class PuzzleModel {
 
 	public void setShuffled(){
 		this.isShuffled = true;
+	}
+
+	public int getGridSize(){
+		return difficulty.getGridSize();
 	}
 
 	/* OBSERVER / OBSERVABLE */

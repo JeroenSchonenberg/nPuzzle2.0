@@ -14,7 +14,7 @@ import nl.han.ica.mad.s478416.npuzzle.R;
 import nl.han.ica.mad.s478416.npuzzle.activities.gametypes.SingleplayerGameActivity;
 
 public class SelectImageActivity extends Activity {
-	@InjectView(R.id.gridview_available_images) GridView gridView;
+	@InjectView (R.id.gridview_available_images) GridView gridView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,13 +27,12 @@ public class SelectImageActivity extends Activity {
     }
 
     AdapterView.OnItemClickListener onGridItemClickListener = new AdapterView.OnItemClickListener() {
-        @Override
-        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        @Override public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
             int imageResId = (Integer) gridView.getItemAtPosition(position);
 
             Intent intent = new Intent(SelectImageActivity.this, SingleplayerGameActivity.class);
+			intent.putExtra(getString(R.string.key_image), imageResId);
             intent.putExtras(getIntent().getExtras());   // pass on all the settings we received
-            intent.putExtra(getString(R.string.key_image), imageResId);
             SelectImageActivity.this.startActivity(intent);
         }
     };

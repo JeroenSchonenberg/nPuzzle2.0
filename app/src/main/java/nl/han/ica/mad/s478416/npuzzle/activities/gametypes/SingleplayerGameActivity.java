@@ -67,7 +67,9 @@ public class SingleplayerGameActivity extends AbstractGameActivity implements IP
 				@Override public void run() { view.fadeOutCompletedPuzzle(); }
 			}, HIDE_COMPLETED_PUZZLE_DELAY);
 			new Handler().postDelayed(new Runnable() {
-				@Override public void run() { shuffle(view, model, ShuffleUtil.genShuffleSequence(0, 0, 0)); }
+				@Override public void run() {
+					int[] shuffleSequence = ShuffleUtil.genShuffleSequence(150, model.getGridSize(), model.getEmptySlot());
+					shuffle(view, model, shuffleSequence); }
 			}, INITIAL_SHUFFLE_DELAY);
 		}
 	}

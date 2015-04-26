@@ -4,7 +4,6 @@ package nl.han.ica.mad.s478416.npuzzle.utils;
  * Created by jeroen on 26/04/15.
  */
 public class ByteUtils {
-
 	public static int byteArrayToInt(byte[] bytes){
 		int value = 0;
 
@@ -24,5 +23,4 @@ public class ByteUtils {
 		bytes[0] = (byte) ((i >> 24) & 0xFF);
 		return bytes;
 	}
-
 }
