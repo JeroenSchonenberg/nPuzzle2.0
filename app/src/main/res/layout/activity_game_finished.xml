@@ -1,0 +1,163 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="fill_parent" android:layout_height="fill_parent"
+              android:id="@+id/layoutContainer" android:orientation="horizontal"
+              android:baselineAligned="false">
+    <RelativeLayout
+        android:layout_width="0dip"
+        android:layout_height="fill_parent"
+        android:layout_weight="@dimen/container_margin_weight">
+    </RelativeLayout>
+    <RelativeLayout
+        android:layout_width="0dip"
+        android:layout_height="fill_parent"
+        android:layout_weight="@dimen/container_weight">
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_centerHorizontal="true"
+            android:id="@+id/container">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:text="@string/title_activity_you_win"
+                android:id="@+id/puzzle_complete"
+                android:elegantTextHeight="false"
+                android:textStyle="bold"
+                android:textSize="@dimen/extra_large_text_size"
+                android:gravity="center"
+                android:paddingBottom="@dimen/default_padding"
+                android:textAllCaps="true"/>
+
+            <nl.han.ica.mad.s478416.npuzzle.views.SquareImageView
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/puzzleImage"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="@dimen/default_padding"
+                android:contentDescription="Puzzle Image"/>
+
+            <GridLayout
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:columnCount="2"
+                android:rowCount="3"
+                android:useDefaultMargins="true"
+                android:paddingTop="@dimen/default_padding"
+                android:paddingBottom="@dimen/default_padding"
+                android:layout_marginLeft="@dimen/default_padding"
+                android:layout_marginRight="@dimen/default_padding"
+                android:id="@+id/grid">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    android:text="@string/move_count"
+                    android:id="@+id/movesLabel"
+                    android:layout_marginLeft="0dp"
+                    android:capitalize="characters"
+                    android:textSize="@dimen/normal_text_size"
+                    android:textAllCaps="true" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    android:text="291"
+                    android:id="@+id/movesValue"
+                    android:layout_gravity="right"
+                    android:layout_marginRight="0dp"
+                    android:textSize="@dimen/normal_text_size"
+                    android:textAllCaps="true" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    android:text="@string/time"
+                    android:id="@+id/timeLabel"
+                    android:layout_marginLeft="0dp"
+                    android:capitalize="characters"
+                    android:textSize="@dimen/normal_text_size"
+                    android:textAllCaps="true"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    android:text="14.35 s"
+                    android:id="@+id/timeValue"
+                    android:layout_gravity="right"
+                    android:layout_marginRight="0dp"
+                    android:textSize="@dimen/normal_text_size"
+                    android:textAllCaps="false"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    android:text="@string/difficulty"
+                    android:id="@+id/difficultyLabel"
+                    android:layout_marginLeft="0dp"
+                    android:capitalize="characters"
+                    android:textSize="@dimen/normal_text_size"
+                    android:textAllCaps="true" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    android:text="EASY"
+                    android:id="@+id/difficultyValue"
+                    android:layout_gravity="right"
+                    android:layout_marginRight="0dp"
+                    android:textSize="@dimen/normal_text_size"
+                    android:textAllCaps="true" />
+
+            </GridLayout>
+
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/new_game"
+                android:id="@+id/btn_new_game"
+                android:paddingTop="@dimen/default_button_padding"
+                android:paddingBottom="@dimen/default_button_padding"
+                android:textSize="@dimen/button_text_size" />
+
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/main_menu"
+                android:id="@+id/btn_main_menu"
+                android:paddingTop="@dimen/default_button_padding"
+                android:paddingBottom="@dimen/default_button_padding"
+                android:textSize="18dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:text="PUZZLE COMPLETE"
+                android:id="@+id/same_width_hack"
+                android:elegantTextHeight="false"
+                android:typeface="serif"
+                android:layout_span="2"
+                android:layout_centerVertical="true"
+                android:layout_centerHorizontal="true"
+                android:textStyle="bold"
+                android:textSize="@dimen/extra_large_text_size"
+                android:visibility="invisible" />
+
+        </LinearLayout>
+    </RelativeLayout>
+    <RelativeLayout
+        android:layout_width="0dip"
+        android:layout_height="fill_parent"
+        android:layout_weight="@dimen/container_margin_weight">
+    </RelativeLayout>
+</LinearLayout>

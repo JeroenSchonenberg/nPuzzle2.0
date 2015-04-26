@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="nl.han.ica.mad.s478416.npuzzle" >
+
+    <application
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:largeHeap="true"
+        android:theme="@style/AppTheme" >
+        <activity
+            android:name=".activities.MainMenuActivity"
+            android:label="@string/app_name" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity android:name=".activities.SelectDifficultyActivity" >
+        </activity>
+        <activity android:name=".activities.SelectImageActivity" >
+        </activity>
+        <activity
+            android:name=".activities.gametypes.SingleplayerGameActivity"
+            android:label="@string/title_activity_gameplay" >
+        </activity>
+        <activity android:name=".activities.GameFinishedActivity" >
+        </activity>
+        <activity
+            android:name=".activities.SelectMultiplayerTypeActivity"
+            android:label="@string/title_activity_select_multiplayer_type" >
+        </activity>
+        <activity
+            android:name=".activities.gametypes.AbstractMultiplayerGameActivity"
+            android:label="@string/title_activity_abstract_multiplayer_game" >
+        </activity>
+        <activity
+            android:name=".activities.gametypes.AbstractGameActivity"
+            android:label="@string/title_activity_abstract_game" >
+        </activity>
+        <activity
+            android:name=".activities.SingleplayerMenuActivity"
+            android:label="@string/title_activity_singleplayer_menu" >
+        </activity>
+        <activity
+            android:name=".activities.MultiplayerMenuActivity"
+            android:label="@string/title_activity_multiplayer_menu" >
+        </activity>
+    </application>
+
+</manifest>

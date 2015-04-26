@@ -1,0 +1,22 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="nl.han.ica.mad.s478416.npuzzle.activities.gametypes.SingleplayerGameActivity">
+    <item android:id="@+id/action_change_difficulty" android:title="@string/action_change_difficulty"
+        app:showAsAction="never">
+        <menu>
+            <group android:checkableBehavior="single">
+                <item android:id="@+id/change_difficulty_easy"
+                    android:title="@string/difficulty_easy" />
+                <item android:id="@+id/change_difficulty_medium"
+                    android:title="@string/difficulty_normal" />
+                <item android:id="@+id/change_difficulty_hard"
+                    android:title="@string/difficulty_hard" />
+            </group>
+        </menu>
+    </item>
+    <item android:id="@+id/action_reshuffle" android:title="@string/action_reshuffle"
+        app:showAsAction="never" />
+    <item android:id="@+id/action_quit_puzzle" android:title="@string/action_quit_puzzle"
+        app:showAsAction="never"/>
+</menu>

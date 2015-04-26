@@ -1,0 +1,80 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="fill_parent" android:layout_height="fill_parent"
+              android:id="@+id/layoutContainer" android:orientation="horizontal"
+              android:baselineAligned="false">
+    <RelativeLayout
+        android:layout_width="0dip"
+        android:layout_height="fill_parent"
+        android:layout_weight="@dimen/container_margin_weight">
+    </RelativeLayout>
+    <RelativeLayout
+        android:layout_width="0dip"
+        android:layout_height="fill_parent"
+        android:layout_weight="@dimen/container_weight">
+        <!-- 70% Width End-->
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_centerHorizontal="true"
+            android:id="@+id/linearLayout">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:text="@string/title_activity_select_difficulty"
+                android:id="@+id/textView3"
+                android:elegantTextHeight="false"
+                android:textStyle="bold"
+                android:textSize="@dimen/extra_large_text_size"
+                android:gravity="center"
+                android:paddingBottom="@dimen/default_padding"
+                android:textAllCaps="true" />
+
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="TEST"
+                android:id="@+id/btn_test"
+                android:textSize="@dimen/button_text_size"
+                android:paddingTop="@dimen/default_button_padding"
+                android:paddingBottom="@dimen/default_button_padding"/>
+
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/difficulty_easy"
+                android:id="@+id/btn_easy"
+                android:textSize="@dimen/button_text_size"
+                android:paddingTop="@dimen/default_button_padding"
+                android:paddingBottom="@dimen/default_button_padding" />
+
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/difficulty_normal"
+                android:id="@+id/btn_normal"
+                android:textSize="@dimen/button_text_size"
+                android:paddingTop="@dimen/default_button_padding"
+                android:paddingBottom="@dimen/default_button_padding" />
+
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/difficulty_hard"
+                android:id="@+id/btn_hard"
+                android:textSize="@dimen/button_text_size"
+                android:paddingTop="@dimen/default_button_padding"
+                android:paddingBottom="@dimen/default_button_padding" />
+
+        </LinearLayout>
+        <!-- 70% Width End-->
+    </RelativeLayout>
+    <RelativeLayout
+        android:layout_width="0dip"
+        android:layout_height="fill_parent"
+        android:layout_weight="@dimen/container_margin_weight">
+    </RelativeLayout>
+</LinearLayout>
