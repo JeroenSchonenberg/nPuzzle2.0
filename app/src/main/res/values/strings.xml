@@ -2,7 +2,7 @@
     <string name="app_name">nPuzzle</string>
 
     <!-- activity titles -->
-    <string name="title_activity_main_menu">n-puzzle</string>
+    <string name="title_activity_main_menu">n-puzzle 2.0</string>
     <string name="title_activity_select_image">pick a puzzle</string>
     <string name="title_activity_select_difficulty">pick a difficulty</string>
     <string name="title_activity_gameplay">Puzzle</string>
