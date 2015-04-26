@@ -7,9 +7,6 @@ import android.util.Log;
 
 import nl.han.ica.mad.s478416.npuzzle.model.Difficulty;
 
-/**
- * Created by jeroen on 03/04/15.
- */
 public class SavegameManager {
     private static final String IMG_KEY = "imgResId";
     private static final String DIFFICULTY_KEY = "difficulty";
