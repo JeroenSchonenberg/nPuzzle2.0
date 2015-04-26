@@ -5,6 +5,7 @@ import android.os.Handler;
 
 import java.util.Arrays;
 
+import nl.han.ica.mad.s478416.npuzzle.model.GameState;
 import nl.han.ica.mad.s478416.npuzzle.model.PuzzleModel;
 import nl.han.ica.mad.s478416.npuzzle.views.PuzzleView;
 
@@ -15,6 +16,8 @@ public abstract class AbstractGameActivity extends Activity {
 	protected void shuffle(final PuzzleView view, final PuzzleModel model, int[] shuffleSequence){
 		if (shuffleSequence.length == 0){
 			locked = false;
+
+			model.setShuffled();
 			model.setMoveCount(0);
 			model.resetTimer();
 		} else {

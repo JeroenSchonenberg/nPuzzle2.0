@@ -3,6 +3,7 @@ package nl.han.ica.mad.s478416.npuzzle.activities.gametypes;
 import android.content.Intent;
 import android.os.Handler;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout;
@@ -18,7 +19,7 @@ import nl.han.ica.mad.s478416.npuzzle.views.*;
 /**
  * Created by Jeroen Schonenberg (478416) on 27/03/15.
  */
-public class SingleplayerGameActivity extends AbstractGameActivity implements IPuzzleModelObserver {
+public class SingleplayerGameActivity extends AbstractGameActivity implements IPuzzleModelObserver, IPuzzleViewObserver {
     private static final int TO_YOU_WIN_ACTIVITY_DELAY = 1500;
 	private static final int HIDE_COMPLETED_PUZZLE_DELAY = 1000;                            // in ms
 	private static final int INITIAL_SHUFFLE_DELAY = HIDE_COMPLETED_PUZZLE_DELAY + 1250;    // in ms
@@ -43,36 +44,36 @@ public class SingleplayerGameActivity extends AbstractGameActivity implements IP
         Boolean resumeGame = intent.getBooleanExtra(getString(R.string.key_resume_game), false);
 		// collect parameters needed to (re)construct the puzzle
         int imgResId 			= resumeGame ? savegameManager.getSavedImgResId() 		: intent.getIntExtra(getString(R.string.key_image), 0);
-		int moveCount 			= resumeGame ? savegameManager.getSavedMoveCount() 		: 0;
 		Difficulty difficulty 	= resumeGame ? savegameManager.getSavedDifficulty() 	: (Difficulty) intent.getSerializableExtra(getString(R.string.key_difficulty));
-		GameState gameState 	= resumeGame ? GameState.SHUFFLED 						: GameState.UNSHUFFLED;
+		int moveCount 			= resumeGame ? savegameManager.getSavedMoveCount() 		: 0;
+		Integer[] arrangement	= resumeGame ? savegameManager.getSavedArrangement()	: null;
 
-		initPuzzle(imgResId, difficulty, gameState, moveCount);
+		initPuzzle(imgResId, difficulty, resumeGame, moveCount, arrangement);
     }
 
-	private void initPuzzle(int imgResId, Difficulty difficulty, GameState gameState, int moveCount){
-		this.model = new PuzzleModel(imgResId, difficulty, gameState, moveCount, null);
+	private void initPuzzle(int imgResId, Difficulty difficulty, boolean isShuffled, int moveCount, Integer[] arrangement){
+		this.model = new PuzzleModel(imgResId, difficulty, isShuffled, moveCount, arrangement);
 		this.model.addObserver(this);
 
-		this.view = new PuzzleView(this, imgResId, difficulty.getGridSize());
+		this.view = new PuzzleView(this, imgResId, difficulty.getGridSize(), arrangement);
 		this.view.setLayoutParams(new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
 		this.view.setOnPieceClickListener(onPuzzlePieceClick);
+		this.view.addObserver(this);
 		this.container.addView(view);
+	}
 
-		switch (gameState){
-			case UNSHUFFLED:
-				locked = true;
-				new Handler().postDelayed(new Runnable() {
-					@Override public void run() { view.hideCompletedPuzzle();	}
-				}, HIDE_COMPLETED_PUZZLE_DELAY);
-				new Handler().postDelayed(new Runnable() {
-					@Override public void run() { shuffle(view, model, ShuffleUtil.genShuffleSequence(0, 0, 0)); }
-				}, INITIAL_SHUFFLE_DELAY);
-				break;
-			case SHUFFLED:
-				locked = false;
-				view.hideCompletedPuzzle();
-				break;
+	public void onPuzzleViewLoaded(PuzzleView puzzleView){
+		if(model.isShuffled()){
+			locked = false;
+			view.hideCompletedPuzzle();
+		} else {
+			locked = true;
+			new Handler().postDelayed(new Runnable() {
+				@Override public void run() { view.hideCompletedPuzzle(); }
+			}, HIDE_COMPLETED_PUZZLE_DELAY);
+			new Handler().postDelayed(new Runnable() {
+				@Override public void run() { shuffle(view, model, ShuffleUtil.genShuffleSequence(0, 0, 0)); }
+			}, INITIAL_SHUFFLE_DELAY);
 		}
 	}
 
@@ -92,18 +93,19 @@ public class SingleplayerGameActivity extends AbstractGameActivity implements IP
 	protected void onPause(){
 		super.onPause();
 
-		savegameManager.save(
-			model.getImageResourceId(),
-			model.getDifficulty(),
-			model.getArrangement(),
-			model.getMoveCount()
-		);
+		if(model.isShuffled()) {	// saving the game only makes sense if it has been shuffled
+			savegameManager.save(
+					model.getImageResourceId(),
+					model.getDifficulty(),
+					model.getArrangement(),
+					model.getMoveCount()
+			);
+		}
 	}
 
 	public void onPuzzleFinished(final PuzzleModel model){
 		view.showCompletedPuzzle();
 		locked = true;
-		savegameManager.deleteSavegame();
 
 		new Handler().postDelayed(new Runnable() {
 			@Override public void run() { StartYouWinActivity(); }

@@ -12,18 +12,18 @@ public class PuzzleModel {
     private int imageResId;
     private Difficulty difficulty;
     private int moves;
-	private GameState gameState;
+	private boolean isShuffled;
     private Integer[] arrangement;
 	private Stack moveHistory;
 	private long startTime = 0;
 	private long endTime;
 
-    public PuzzleModel(int imageResId, Difficulty difficulty, GameState gameState){
-		this.observers = new ArrayList<IPuzzleModelObserver>();
+    public PuzzleModel(int imageResId, Difficulty difficulty, boolean isShuffled){
+		this.observers = new ArrayList<>();
 
         this.imageResId = imageResId;
         this.difficulty = difficulty;
-		this.gameState = gameState;
+		this.isShuffled = isShuffled;
 		this.moves = 0;
 		this.moveHistory = new Stack();
         this.arrangement = new Integer[difficulty.getGridSize() * difficulty.getGridSize()];
@@ -34,8 +34,8 @@ public class PuzzleModel {
 		}
     }
 
-	public PuzzleModel(int imageResId, Difficulty difficulty, GameState gameState, int moves, Integer[] arrangement) {
-		this(imageResId, difficulty, gameState);
+	public PuzzleModel(int imageResId, Difficulty difficulty, boolean shuffled, int moves, Integer[] arrangement) {
+		this(imageResId, difficulty, shuffled);
 
 		this.moves = moves;
 		if (arrangement != null) this.arrangement = arrangement;
@@ -83,16 +83,8 @@ public class PuzzleModel {
 
 	/* SIMPLE GET & SET */
 
-	public void setArrangement(Integer[] arrangement){
-		this.arrangement = arrangement;
-	}
-
 	public void setMoveCount(int moveCount){
 		this.moves = moveCount;
-	}
-
-	public int getPieceCount(){
-		return arrangement.length - 1;
 	}
 
     public Integer[] getArrangement(){
@@ -131,18 +123,16 @@ public class PuzzleModel {
         return difficulty;
     }
 
-	public GameState getGameState(){
-		return gameState;
+	public boolean isShuffled(){ return isShuffled; }
+
+	public void setShuffled(){
+		this.isShuffled = true;
 	}
 
 	/* OBSERVER / OBSERVABLE */
 
 	public void addObserver(IPuzzleModelObserver observer){
 		this.observers.add(observer);
-	}
-
-	public void removeObserver(IPuzzleModelObserver observer){
-		this.observers.remove(observer);
 	}
 
 	private void notifyObservers(){

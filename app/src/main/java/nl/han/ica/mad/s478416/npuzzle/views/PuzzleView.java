@@ -3,13 +3,17 @@ package nl.han.ica.mad.s478416.npuzzle.views;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.util.Log;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.view.animation.Transformation;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
+import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
+
+import java.util.ArrayList;
 
 import nl.han.ica.mad.s478416.npuzzle.utils.BitmapUtils;
 
@@ -22,6 +26,8 @@ public class PuzzleView extends RelativeLayout {
     public static final int ANIM_SLIDE_DURATION = 40;                 	// in ms
 	public static final int ANIM_COMPLETED_PUZZLE_ALPHA_DURATION = 500;	// in ms
 
+	private ArrayList<IPuzzleViewObserver> observers;
+
     private boolean bitmapsInitialized;
     private int gridSize;
 	private int pieceWidth;
@@ -30,16 +36,20 @@ public class PuzzleView extends RelativeLayout {
 	private ImageView completedPuzzle;
 	private PuzzlePiece[] pieces;
 
-    public PuzzleView(Context context, int baseImageResourceId, int gridSize) {
+	private Integer[] initialArrangement;
+
+    public PuzzleView(Context context, int baseImageResourceId, int gridSize, Integer[] arrangement) {
         super(context, null, 0);
+
+		observers = new ArrayList<>();
 
 		this.bitmapsInitialized = false;
 
         this.setBackgroundColor(BG_COLOR);
         this.gridSize = gridSize;
         this.baseImageResourceId = baseImageResourceId;
-		this.pieces = new PuzzlePiece[gridSize * gridSize - 1];
 
+		this.pieces = new PuzzlePiece[gridSize * gridSize - 1];
 		for(int i = 0; i < pieces.length; i++){
 			this.pieces[i] = new PuzzlePiece(getContext(), i);
 			this.addView(pieces[i]);
@@ -47,6 +57,8 @@ public class PuzzleView extends RelativeLayout {
 
 		this.completedPuzzle = new ImageView(getContext());
 		this.addView(completedPuzzle);
+
+		if (arrangement != null) initialArrangement = arrangement;
     }
 
     @Override
@@ -66,7 +78,9 @@ public class PuzzleView extends RelativeLayout {
 		Picasso.with(getContext())
 			.load(baseImageResourceId)
 			.resize(getLayoutParams().width, getLayoutParams().width)
-			.into(completedPuzzle);
+			.into(completedPuzzle, new Callback.EmptyCallback() {
+				@Override public void onSuccess() { notifyObservers(); }
+			});
 
 		int baseImageWidth = getLayoutParams().width - (PIECE_MARGIN * (gridSize - 1));
 		this.pieceWidth = baseImageWidth / gridSize;
@@ -76,7 +90,9 @@ public class PuzzleView extends RelativeLayout {
 
 		for(int i = 0; i < pieces.length; i++){
 			pieces[i].setImageBitmap(pieceBitmaps[i]);
-			setPiecePosition(pieces[i], calcSlotX(i), calcSlotY(i));
+
+			int initialSlot = (initialArrangement != null) ? java.util.Arrays.asList(initialArrangement).indexOf(i) : i;
+			setPiecePosition(pieces[i], calcSlotX(initialSlot), calcSlotY(initialSlot));
 		}
 
 		bitmapsInitialized = true;
@@ -135,5 +151,17 @@ public class PuzzleView extends RelativeLayout {
 		baseAnimation.setDuration(ANIM_COMPLETED_PUZZLE_ALPHA_DURATION);
 		baseAnimation.setFillAfter(true);
 		completedPuzzle.startAnimation(baseAnimation);
+	}
+
+	/* OBSERVER / OBSERVABLE */
+
+	public void addObserver(IPuzzleViewObserver observer){
+		observers.add(observer);
+	}
+
+	private void notifyObservers(){
+		for(IPuzzleViewObserver observer : observers){
+			observer.onPuzzleViewLoaded(this);
+		}
 	}
 }
