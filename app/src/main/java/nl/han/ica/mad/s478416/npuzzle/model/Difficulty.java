@@ -4,7 +4,7 @@ package nl.han.ica.mad.s478416.npuzzle.model;
  * Created by jeroen on 03/04/15.
  */
 public enum Difficulty{
-    TEST(2), EASY(3), MEDIUM(4), HARD(5);
+    EASY(3), MEDIUM(4), HARD(5), DEBUG(2);
 
     private final int size;
 

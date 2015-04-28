@@ -12,40 +12,40 @@ import nl.han.ica.mad.s478416.npuzzle.R;
 import nl.han.ica.mad.s478416.npuzzle.model.Difficulty;
 
 public class SelectDifficultyActivity extends Activity implements View.OnClickListener{
-	@InjectView(R.id.btn_test) Button buttonTest;
-	@InjectView(R.id.btn_easy) Button buttonEasy;
-	@InjectView(R.id.btn_normal) Button buttonNormal;
-	@InjectView(R.id.btn_hard) Button buttonHard;
+	@InjectView(R.id.btn_debug) 	Button buttonDebug;
+	@InjectView(R.id.btn_easy) 		Button buttonEasy;
+	@InjectView(R.id.btn_normal) 	Button buttonNormal;
+	@InjectView(R.id.btn_hard) 		Button buttonHard;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_select_difficulty);
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.activity_select_difficulty);
 		ButterKnife.inject(this);
 
-		buttonTest.setOnClickListener(this);
-        buttonEasy.setOnClickListener(this);
-        buttonNormal.setOnClickListener(this);
-        buttonHard.setOnClickListener(this);
-    }
+		buttonDebug.setOnClickListener(this);
+		buttonEasy.setOnClickListener(this);
+		buttonNormal.setOnClickListener(this);
+		buttonHard.setOnClickListener(this);
+	}
 
-    @Override
-    public void onClick(View v){
-        switch(v.getId()){
-			case R.id.btn_test:
-				startChoosePuzzleActivity(Difficulty.TEST);
+	@Override
+	public void onClick(View v){
+		switch(v.getId()){
+			case R.id.btn_debug:
+				startChoosePuzzleActivity(Difficulty.DEBUG);
 				break;
-            case R.id.btn_easy:
-                startChoosePuzzleActivity(Difficulty.EASY);
-                break;
-            case R.id.btn_normal:
-                startChoosePuzzleActivity(Difficulty.MEDIUM);
-                break;
-            case R.id.btn_hard:
-                startChoosePuzzleActivity(Difficulty.HARD);
-                break;
-        }
-    }
+			case R.id.btn_easy:
+				startChoosePuzzleActivity(Difficulty.EASY);
+				break;
+			case R.id.btn_normal:
+				startChoosePuzzleActivity(Difficulty.MEDIUM);
+				break;
+			case R.id.btn_hard:
+				startChoosePuzzleActivity(Difficulty.HARD);
+				break;
+		}
+	}
 
     public void startChoosePuzzleActivity(Difficulty chosenDifficulty) {
         Intent intent = new Intent(SelectDifficultyActivity.this, SelectImageActivity.class);

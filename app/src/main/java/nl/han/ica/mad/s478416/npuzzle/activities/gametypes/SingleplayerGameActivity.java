@@ -1,10 +1,13 @@
 package nl.han.ica.mad.s478416.npuzzle.activities.gametypes;
 
+import android.app.ActivityOptions;
 import android.content.Intent;
 import android.os.Handler;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
 import butterknife.ButterKnife;
@@ -64,21 +67,28 @@ public class SingleplayerGameActivity extends AbstractGameActivity implements IP
 		} else {
 			locked = true;
 			new Handler().postDelayed(new Runnable() {
-				@Override public void run() { view.fadeOutCompletedPuzzle(); }
+				@Override
+				public void run() {
+					view.fadeOutCompletedPuzzle();
+				}
 			}, HIDE_COMPLETED_PUZZLE_DELAY);
 			new Handler().postDelayed(new Runnable() {
-				@Override public void run() {
-					int[] shuffleSequence = ShuffleUtil.genShuffleSequence(150, model.getGridSize(), model.getEmptySlot());
-					shuffle(view, model, shuffleSequence); }
+				@Override
+				public void run() {
+					int[] shuffleSequence = ShuffleUtil.genShuffleSequence(50, model.getGridSize(), model.getEmptySlot());
+					shuffle(view, model, shuffleSequence);
+				}
 			}, INITIAL_SHUFFLE_DELAY);
 		}
 	}
 
 	View.OnClickListener onPuzzlePieceClick = new View.OnClickListener() {
-		@Override public void onClick(View v) {
+		@Override
+		public void onClick(View v) {
 			if (locked) return;
 
-			int pieceNumber = ((IPuzzlePiece) v).getNumber();
+			int pieceNumber = view.getPieceNumber(v);
+
 			if(model.pieceNeighboursEmptySlot(pieceNumber)){
 				view.animateSlidePieceToSlot(pieceNumber, model.getEmptySlot());
 				model.movePieceToEmptySlot(pieceNumber);
@@ -110,7 +120,7 @@ public class SingleplayerGameActivity extends AbstractGameActivity implements IP
 	}
 
 	private void StartYouWinActivity(){
-		Intent i = new Intent(SingleplayerGameActivity.this, GameFinishedActivity.class);
+		Intent i = new Intent(this, GameFinishedActivity.class);
 		i.putExtra(getString(R.string.key_image), model.getImageResourceId());
 		i.putExtra(getString(R.string.key_difficulty), model.getDifficulty());
 		i.putExtra(getString(R.string.key_moves_count), model.getMoveCount());

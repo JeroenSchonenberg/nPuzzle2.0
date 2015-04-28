@@ -19,7 +19,7 @@
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
             android:layout_centerHorizontal="true"
-            android:id="@+id/linearLayout">
+            android:id="@+id/container">
 
             <TextView
                 android:layout_width="match_parent"
@@ -37,8 +37,8 @@
             <Button
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="DEMO"
-                android:id="@+id/btn_test"
+                android:text="@string/difficulty_debug"
+                android:id="@+id/btn_debug"
                 android:textSize="@dimen/button_text_size"
                 android:paddingTop="@dimen/default_button_padding"
                 android:paddingBottom="@dimen/default_button_padding"/>
@@ -50,7 +50,7 @@
                 android:id="@+id/btn_easy"
                 android:textSize="@dimen/button_text_size"
                 android:paddingTop="@dimen/default_button_padding"
-                android:paddingBottom="@dimen/default_button_padding" />
+                android:paddingBottom="@dimen/default_button_padding"/>
 
             <Button
                 android:layout_width="match_parent"

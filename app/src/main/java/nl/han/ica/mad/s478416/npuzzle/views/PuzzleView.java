@@ -3,6 +3,7 @@ package nl.han.ica.mad.s478416.npuzzle.views;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.view.View;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.view.animation.Transformation;
@@ -29,17 +30,17 @@ public class PuzzleView extends RelativeLayout {
 
 	private ArrayList<IPuzzleViewObserver> observers;
 
+	private Integer[] customArrangement;
     private boolean bitmapsInitialized;
+
     private int gridSize;
 	private int pieceWidth;
 
-	private int baseImageResourceId;
+	private int imgResId;
 	private ImageView completedPuzzle;
-	private PuzzlePiece[] pieces;
+	private ImageView[] pieces;
 
-	private Integer[] initialArrangement;
-
-    public PuzzleView(Context context, int baseImageResourceId, int gridSize, Integer[] arrangement) {
+    public PuzzleView(Context context, int imgResId, int gridSize) {
         super(context, null, 0);
 
 		observers = new ArrayList<>();
@@ -47,25 +48,30 @@ public class PuzzleView extends RelativeLayout {
 
         this.setBackgroundColor(BG_COLOR);
         this.gridSize = gridSize;
-        this.baseImageResourceId = baseImageResourceId;
-
-		this.pieces = new PuzzlePiece[gridSize * gridSize - 1];
-		for(int i = 0; i < pieces.length; i++){
-			this.pieces[i] = new PuzzlePiece(getContext(), i);
-		}
+        this.imgResId = imgResId;
 
 		this.completedPuzzle = new ImageView(getContext());
 		this.addView(completedPuzzle);
 
-		if (arrangement != null) initialArrangement = arrangement;
+		this.pieces = new ImageView[gridSize * gridSize - 1];
+		for(int i = 0; i < pieces.length; i++){
+			this.pieces[i] = new ImageView(getContext());
+		}
     }
+
+	public PuzzleView(Context context, int baseImageResId, int gridSize, Integer[] customArrangement) {
+		this(context, baseImageResId, gridSize);
+
+		this.customArrangement = customArrangement;
+	}
 
     @Override
     public void onSizeChanged (int width, int height, int oldWidth, int oldHeight){
         super.onSizeChanged(width, height, oldWidth, oldHeight);
         LayoutParams params = new LayoutParams(width, width);
-        params.addRule(RelativeLayout.CENTER_HORIZONTAL);
+        params.addRule(RelativeLayout.CENTER_IN_PARENT);
         this.setLayoutParams(params);
+
         initBitmaps();
     }
 
@@ -73,24 +79,24 @@ public class PuzzleView extends RelativeLayout {
 		if (bitmapsInitialized) return;
 
 		Picasso.with(getContext())
-			.load(baseImageResourceId)
+			.load(imgResId)
 			.resize(getLayoutParams().width, getLayoutParams().width)
 			.into(completedPuzzle, new Callback.EmptyCallback() {
-				@Override
-				public void onSuccess() {
+				@Override public void onSuccess() {
 					completedPuzzleLoaded();
 				}
 			});
 
 		int baseImageWidth = getLayoutParams().width - (PIECE_MARGIN * (gridSize - 1));
-		Bitmap baseImage = BitmapUtils.scaledBitmapFromResource(getResources(), baseImageResourceId, baseImageWidth, baseImageWidth);
+		Bitmap baseBitmap = BitmapUtils.scaledBitmapFromResource(getResources(), imgResId, baseImageWidth, baseImageWidth);
 
 		this.pieceWidth = baseImageWidth / gridSize;
-		Bitmap[] pieceBitmaps = BitmapUtils.sliceAsGrid(baseImage, gridSize);
+		Bitmap[] pieceBitmaps = BitmapUtils.sliceAsGrid(baseBitmap, gridSize);
 
 		for(int i = 0; i < pieces.length; i++){
 			pieces[i].setImageBitmap(pieceBitmaps[i]);
-			int initialSlot = (initialArrangement != null) ? java.util.Arrays.asList(initialArrangement).indexOf(i) : i;
+
+			int initialSlot = (customArrangement != null) ? java.util.Arrays.asList(customArrangement).indexOf(i) : i;
 			setPiecePosition(pieces[i], calcSlotX(initialSlot), calcSlotY(initialSlot));
 		}
 
@@ -98,7 +104,7 @@ public class PuzzleView extends RelativeLayout {
     }
 
 	private void completedPuzzleLoaded(){
-		for(PuzzlePiece p : pieces){
+		for(ImageView p : pieces){
 			this.addView(p);
 
 			// fade in the pieces almost simultaneously with Picasso's fade of completedImage
@@ -112,23 +118,15 @@ public class PuzzleView extends RelativeLayout {
 	}
 
 	public void setOnPieceClickListener(OnClickListener listener){
-		for (PuzzlePiece p : pieces) p.setOnClickListener(listener);
+		for (ImageView p : pieces) p.setOnClickListener(listener);
 	}
 
-	public void fadeInCompletedPuzzle(){
-		fadeCompletedPuzzle( new AlphaAnimation(0.0f, 1.0f) );
-	}
-
-	public void fadeOutCompletedPuzzle(){
-		fadeCompletedPuzzle( new AlphaAnimation(1.0f, 0.0f) );
-	}
-
-	public void hideCompletedPuzzle(){
-		completedPuzzle.setVisibility(INVISIBLE);
+	public int getPieceNumber(View piece){
+		return java.util.Arrays.asList(pieces).indexOf(piece);
 	}
 
 	public void animateSlidePieceToSlot(int pieceNumber, int targetSlot){
-		final PuzzlePiece piece = pieces[pieceNumber];
+		final ImageView piece = pieces[pieceNumber];
 
 		// get current coordinates and delta between current and old coordinates
 		final int oldX = piece.getLeft();
@@ -139,9 +137,9 @@ public class PuzzleView extends RelativeLayout {
 		// construct and start animation
 		Animation a = new Animation() {
 			@Override protected void applyTransformation(float interpolatedTime, Transformation t) {
-				int animatedLeftMargin = (int)(oldX + (deltaX * interpolatedTime));
-				int animatedTopMargin = (int)(oldY + (deltaY * interpolatedTime));
-				setPiecePosition(piece, animatedLeftMargin, animatedTopMargin);
+				int animatedX = (int)(oldX + (deltaX * interpolatedTime));
+				int animatedY = (int)(oldY + (deltaY * interpolatedTime));
+				setPiecePosition(piece, animatedX, animatedY);
 			}
 		};
 		a.setDuration(ANIM_SLIDE_DURATION);
@@ -156,10 +154,24 @@ public class PuzzleView extends RelativeLayout {
 		return (pieceWidth + PIECE_MARGIN) * (slot / gridSize);
 	}
 
-	private void setPiecePosition(PuzzlePiece piece, int x, int y){
-		LayoutParams params = piece.getLayoutParams() != null ? (LayoutParams)piece.getLayoutParams() : new LayoutParams(pieceWidth, pieceWidth);
+	private void setPiecePosition(ImageView piece, int x, int y){
+		LayoutParams params = new LayoutParams(pieceWidth, pieceWidth);
 		params.setMargins(x, y, 0, 0);
 		piece.setLayoutParams(params);
+	}
+
+	/* showing / hiding the completed puzzle */
+
+	public void hideCompletedPuzzle(){
+		completedPuzzle.setVisibility(INVISIBLE);
+	}
+
+	public void fadeInCompletedPuzzle(){
+		fadeCompletedPuzzle( new AlphaAnimation(0.0f, 1.0f) );
+	}
+
+	public void fadeOutCompletedPuzzle(){
+		fadeCompletedPuzzle( new AlphaAnimation(1.0f, 0.0f) );
 	}
 
 	private void fadeCompletedPuzzle(AlphaAnimation baseAnimation){

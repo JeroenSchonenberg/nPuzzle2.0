@@ -24,6 +24,7 @@
     <string name="difficulty_easy">Easy</string>
     <string name="difficulty_normal">Normal</string>
     <string name="difficulty_hard">Hard</string>
+    <string name="difficulty_debug">Debug</string>
 
     <string name="time">time</string>
     <string name="milliseconds_suffix">ms</string>
