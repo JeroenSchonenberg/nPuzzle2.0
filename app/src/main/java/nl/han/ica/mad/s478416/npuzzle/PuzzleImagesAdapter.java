@@ -28,7 +28,6 @@ public class PuzzleImagesAdapter extends BaseAdapter {
 
     public View getView(int position, View convertView, ViewGroup parents){
 		SquareImageView squareImageView = (convertView == null) ? new SquareImageView(context) : (SquareImageView) convertView;
-
 		Picasso.with(context)
 		    .load(puzzleImages.get(position))
 			.placeholder(R.drawable.placeholder_puzzle_image)

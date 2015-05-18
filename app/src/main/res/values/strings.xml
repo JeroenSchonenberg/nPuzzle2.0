@@ -1,5 +1,7 @@
 <resources>
+    <string name="app_id">1024564437926</string>
     <string name="app_name">nPuzzle</string>
+
 
     <!-- activity titles -->
     <string name="main_menu_title">n-puzzle</string>
@@ -41,4 +43,8 @@
     <string name="key_difficulty">difficulty</string>
     <string name="key_moves_count">movesCount</string>
     <string name="key_time">timeToSolve</string>
+    <string name="title_activity_versus_multiplayer_game">VersusMultiplayerGameActivity</string>
+
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
 </resources>

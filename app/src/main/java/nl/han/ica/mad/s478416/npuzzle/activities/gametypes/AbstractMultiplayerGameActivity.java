@@ -1,27 +1,40 @@
 package nl.han.ica.mad.s478416.npuzzle.activities.gametypes;
 
+import android.content.IntentSender;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.WindowManager;
+import android.widget.Button;
 
+import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.games.Games;
+import com.google.android.gms.games.internal.constants.RoomStatus;
 import com.google.android.gms.games.multiplayer.Participant;
 import com.google.android.gms.games.multiplayer.realtime.RealTimeMessageReceivedListener;
 import com.google.android.gms.games.multiplayer.realtime.RealTimeMessage;
+import com.google.android.gms.games.multiplayer.realtime.Room;
+import com.google.android.gms.games.multiplayer.realtime.RoomConfig;
+import com.google.android.gms.games.multiplayer.realtime.RoomStatusUpdateListener;
+import com.google.android.gms.games.multiplayer.realtime.RoomUpdateListener;
 import com.google.android.gms.plus.Plus;
 
+import java.util.List;
+
+import butterknife.InjectView;
 import nl.han.ica.mad.s478416.npuzzle.R;
 import nl.han.ica.mad.s478416.npuzzle.utils.ByteUtils;
 
 public abstract class AbstractMultiplayerGameActivity extends AbstractGameActivity implements GoogleApiClient.ConnectionCallbacks,
-		GoogleApiClient.OnConnectionFailedListener, RealTimeMessageReceivedListener{
+		GoogleApiClient.OnConnectionFailedListener, RealTimeMessageReceivedListener, RoomUpdateListener, RoomStatusUpdateListener{
+	private static int RC_SIGN_IN = 9001;
 	private static final char READY 	= 'R';
 	private static final char SHUFFLE	= 'S';
 	private static final char MOVE 		= 'M';
 	private static final char FINISHED 	= 'F';
 	private static final char QUIT 		= 'Q';
 
-	private GoogleApiClient googleApiClient;
+	protected GoogleApiClient googleApiClient;
 	private String roomId;
 	private Participant opponent;
 
@@ -36,6 +49,121 @@ public abstract class AbstractMultiplayerGameActivity extends AbstractGameActivi
 				.addApi(Plus.API).addScope(Plus.SCOPE_PLUS_LOGIN)
 				.addApi(Games.API).addScope(Games.SCOPE_GAMES)
 				.build();
+	}
+
+	@Override
+	protected void onStart() {
+		super.onStart();
+
+		if (googleApiClient != null && googleApiClient.isConnected()) {
+			Log.w("MAD", "GoogleApiClient was already connected on onStart()");
+		} else {
+			Log.d("MAD","Connecting Google Api Client.");
+			googleApiClient.connect();
+		}
+		super.onStart();
+	}
+
+	public void onConnected(Bundle bundle){
+		Log.d("MAD","Connected to Google Api Client!!");
+		startQuickGame();
+	}
+
+	public void onConnectionSuspended(int raar){}
+
+	public void onConnectionFailed(ConnectionResult result){
+		Log.d("MAD", "Connection to Google Api Client failed" + result.toString());
+
+		if (result.hasResolution()) {
+			try {
+				result.startResolutionForResult(this, RC_SIGN_IN);
+			} catch (IntentSender.SendIntentException e) {
+				Log.d("MAD", e.getMessage());
+				googleApiClient.connect();
+			}
+		}
+	}
+
+	protected void startQuickGame(){
+		final int MIN_OPPONENTS = 1, MAX_OPPONENTS = 1;
+
+		Bundle autoMatchCriteria = RoomConfig.createAutoMatchCriteria(MIN_OPPONENTS, MAX_OPPONENTS, 0);
+
+		RoomConfig.Builder rtmConfigBuilder = RoomConfig.builder(this);
+		rtmConfigBuilder.setMessageReceivedListener(this);
+		rtmConfigBuilder.setRoomStatusUpdateListener(this);
+		rtmConfigBuilder.setAutoMatchCriteria(autoMatchCriteria);
+
+		Games.RealTimeMultiplayer.create(googleApiClient, rtmConfigBuilder.build());
+	}
+
+
+
+	@Override
+	public void onRoomAutoMatching(Room room) {
+		Log.d("MAD", "Room automatching"); }
+
+	@Override
+	public void onRoomConnecting(Room room) {
+		Log.d("MAD", "Room connecting");
+	}
+
+
+	@Override
+	public void onRoomConnected(int i, Room room) {
+		Log.d("MAD", "Room connected!!");
+	}
+
+	@Override
+	public void onRoomCreated(int i, Room room) {
+		Log.d("MAD", "Room connecting");
+	}
+
+	@Override
+	public void onJoinedRoom(int i, Room room) {
+		Log.d("MAD", "Room joined");
+	}
+
+	@Override
+	public void onDisconnectedFromRoom(Room room) { }
+
+	@Override
+	public void onConnectedToRoom(Room room) {
+		Log.d("MAD", "Player connected to the room");
+	}
+
+	@Override
+	public void onLeftRoom(int i, String s) {
+
+	}
+
+	@Override
+	public void onPeerLeft(Room room, List<String> strings) {}
+
+	@Override
+	public void onPeerDeclined(Room room, List<String> strings) {}
+
+	@Override
+	public void onPeerInvitedToRoom(Room room, List<String> strings) {}
+
+	@Override
+	public void onPeerJoined(Room room, List<String> strings) {
+		Log.d("MAD", "Peer joined");
+	}
+
+	@Override
+	public void onPeersConnected(Room room, List<String> strings) {
+
+		Log.d("MAD", "Peer connected");
+	}
+
+	@Override
+	public void onPeersDisconnected(Room room, List<String> strings) {}
+
+	protected RoomConfig.Builder makeBasicRoomConfigBuilder() {
+		return RoomConfig.builder(this)
+				.setMessageReceivedListener(this)
+				.setRoomStatusUpdateListener(this);
 	}
 
 	@Override
@@ -100,4 +228,8 @@ public abstract class AbstractMultiplayerGameActivity extends AbstractGameActivi
 		byte[] msg = { (byte) QUIT };
 		Games.RealTimeMultiplayer.sendReliableMessage(googleApiClient, null, msg, roomId, opponent.getParticipantId());
 	}
+
+
+	@Override public void onP2PDisconnected(String participant) {}
+	@Override public void onP2PConnected(String participant) {}
 }

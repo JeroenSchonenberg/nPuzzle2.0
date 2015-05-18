@@ -10,20 +10,22 @@ public class PuzzleModel {
     private int imageResId;
     private Difficulty difficulty;
 	private boolean isShuffled;
-    private int moves;
-    private Integer[] arrangement;
-	private Stack moveHistory;
+
+	private Integer[] arrangement;
+	private int moveCount;
+	private ArrayList<Integer> moveHistory;
+
 	private Long startTime;
 	private Long endTime;
 
-    public PuzzleModel(int imageResId, Difficulty difficulty, boolean isShuffled, int moves, Integer[] arrangement){
+    public PuzzleModel(int imageResId, Difficulty difficulty, boolean isShuffled, int moveCount, Integer[] arrangement){
 		this.observers = new ArrayList<>();
-		this.moveHistory = new Stack();
+		this.moveHistory = new ArrayList<>();
 
         this.imageResId = imageResId;
         this.difficulty = difficulty;
 		this.isShuffled = isShuffled;
-		this.moves = moves;
+		this.moveCount = moveCount;
 
 		if(arrangement != null){
 			this.arrangement = arrangement;
@@ -33,23 +35,17 @@ public class PuzzleModel {
 		}
     }
 
-	public int getPiece(int slot){
-		return arrangement[slot];
-	}
-
     public boolean pieceNeighboursEmptySlot(int pieceId){
+		int gridSize = difficulty.getGridSize();
         int pieceSlot = getPieceSlot(pieceId);
         int emptySlot = getEmptySlot();
-		int gridSize = difficulty.getGridSize();
 
-        if((pieceSlot - gridSize == emptySlot)
-            || (pieceSlot + gridSize == emptySlot)
-            || (pieceSlot + 1 == emptySlot && emptySlot % gridSize != 0)
-            || (pieceSlot - 1 == emptySlot && pieceSlot % gridSize != 0) ){
-            return true;
-        } else {
-            return false;
-        }
+		boolean above = pieceSlot - gridSize == emptySlot;
+		boolean under = pieceSlot + gridSize == emptySlot;
+		boolean leftOf = (pieceSlot + 1 == emptySlot) && (emptySlot % gridSize != 0);
+		boolean rightOf = (pieceSlot - 1 == emptySlot) && (pieceSlot % gridSize != 0);
+
+		return (above || under || leftOf || rightOf);
     }
 
     public void movePieceToEmptySlot(int pieceId){
@@ -58,16 +54,23 @@ public class PuzzleModel {
 		arrangement[emptySlot] = pieceId;
 		arrangement[oldPieceSlot] = null;
 
-        moves++;
-		moveHistory.push(pieceId);
-		startTime = (startTime == null) ? System.nanoTime() : startTime; // start timer if not yet started
+		moveCount++;
+		moveHistory.add(pieceId);
+		if (startTime == null) {
+			startTime = System.nanoTime(); // start timer if not yet started
+		}
 
-		if (this.isFinished() && this.isShuffled) notifyObservers();
+		// check if the puzzle is finished
+		if (this.isShuffled && this.isFinished()) {
+			notifyObservers();
+		}
     }
 
     private boolean isFinished(){
         for(int i = 0; i < arrangement.length; i++){
-            if (arrangement[i] != null && arrangement[i] != i) return false;
+            if (arrangement[i] != null && arrangement[i] != i) {
+				return false;
+			}
         }
 
 		endTime = System.nanoTime();
@@ -75,30 +78,25 @@ public class PuzzleModel {
     }
 
 	public int getTime(){
-		if(startTime != null && endTime != null){	// game is finished
-			return (int) TimeUnit.MILLISECONDS.convert(endTime - startTime, TimeUnit.NANOSECONDS);
-		} else if (startTime != null){				// game is not yet finished but it has started
-			return (int) TimeUnit.MILLISECONDS.convert(System.nanoTime() - startTime, TimeUnit.NANOSECONDS);
-		} else {									// game hasn't even started yet
+		if(startTime == null){
 			return 0;
+		} else {
+			long time = (endTime != null) ? (endTime - startTime) : (System.nanoTime() - startTime);
+			return (int) TimeUnit.MILLISECONDS.convert(time, TimeUnit.NANOSECONDS);
 		}
-	}
-
-	public void setMoveCount(int moveCount){
-		this.moves = moveCount;
 	}
 
     public Integer[] getArrangement(){
         return arrangement;
     }
 
+	public int getPieceNumber(int slot){
+		return arrangement[slot];
+	}
+
     public int getEmptySlot(){
 		return java.util.Arrays.asList(arrangement).indexOf(null);
     }
-
-	public void resetTimer(){
-		startTime = null;
-	}
 
     public int getPieceSlot(int pieceId){
         return java.util.Arrays.asList(arrangement).indexOf(pieceId);
@@ -108,17 +106,13 @@ public class PuzzleModel {
 		return imageResId;
 	}
 
-    public int getMoveCount(){
-        return moves;
-    }
-
-	public Stack getMoveHistory(){
-		return moveHistory;
-	}
-
     public Difficulty getDifficulty(){
         return difficulty;
     }
+
+	public int getGridSize(){
+		return difficulty.getGridSize();
+	}
 
 	public boolean isShuffled(){
 		return isShuffled;
@@ -128,8 +122,20 @@ public class PuzzleModel {
 		this.isShuffled = true;
 	}
 
-	public int getGridSize(){
-		return difficulty.getGridSize();
+	public void setMoveCount(int moveCount){
+		this.moveCount = moveCount;
+	}
+
+	public int getMoveCount(){
+		return moveCount;
+	}
+
+	public ArrayList<Integer> getMoveHistory(){
+		return moveHistory;
+	}
+
+	public void resetTimer(){
+		startTime = null;
 	}
 
 	/* OBSERVER / OBSERVABLE */

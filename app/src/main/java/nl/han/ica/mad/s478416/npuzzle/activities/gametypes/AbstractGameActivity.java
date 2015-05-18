@@ -5,7 +5,6 @@ import android.os.Handler;
 
 import java.util.Arrays;
 
-import nl.han.ica.mad.s478416.npuzzle.model.GameState;
 import nl.han.ica.mad.s478416.npuzzle.model.PuzzleModel;
 import nl.han.ica.mad.s478416.npuzzle.views.PuzzleView;
 
@@ -22,7 +21,7 @@ public abstract class AbstractGameActivity extends Activity {
 		} else {
 			locked = true;
 
-			final int piece = model.getPiece(sequence[0]);
+			final int piece = model.getPieceNumber(sequence[0]);
 			view.animateSlidePieceToSlot(piece, model.getEmptySlot());
 			model.movePieceToEmptySlot(piece);
 

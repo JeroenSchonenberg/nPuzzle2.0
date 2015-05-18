@@ -57,6 +57,7 @@ public class SingleplayerGameActivity extends AbstractGameActivity implements IP
 		this.view.setLayoutParams(new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
 		this.view.setOnPieceClickListener(onPuzzlePieceClick);
 		this.view.addObserver(this);
+		this.view.setTransitionName("completedPuzzle");
 		this.container.addView(view);
 	}
 

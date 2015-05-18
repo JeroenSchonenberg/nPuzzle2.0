@@ -11,8 +11,6 @@ import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 
-import java.util.concurrent.TimeUnit;
-
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import nl.han.ica.mad.s478416.npuzzle.R;
@@ -23,9 +21,9 @@ public class GameFinishedActivity extends Activity implements View.OnClickListen
 	@InjectView(R.id.container)			LinearLayout container;
 	@InjectView(R.id.puzzleImage)		ImageView puzzleImage;
 
-    @InjectView(R.id.difficultyValue) 	TextView textViewDifficulty;
-	@InjectView(R.id.movesValue) 		TextView textViewMoves;
-	@InjectView(R.id.timeValue) 		TextView textViewTime;
+    @InjectView(R.id.difficultyValue) 	TextView lblDifficulty;
+	@InjectView(R.id.movesValue) 		TextView lblMoves;
+	@InjectView(R.id.timeValue) 		TextView lblTime;
 
 	@InjectView(R.id.btn_new_game)  	Button buttonNewGame;
 	@InjectView(R.id.btn_main_menu)  	Button buttonMainMenu;
@@ -55,9 +53,9 @@ public class GameFinishedActivity extends Activity implements View.OnClickListen
 				.resize(container.getMeasuredWidth(), container.getMeasuredWidth())
 				.into(puzzleImage);
 
-        textViewDifficulty.setText(difficulty.toString());
-        textViewMoves.setText(Integer.toString(movesCount));
-		textViewTime.setText(String.format("%.2f", timeSeconds) + getString(R.string.seconds_suffix));
+        lblDifficulty.setText(difficulty.toString());
+        lblMoves.setText(Integer.toString(movesCount));
+		lblTime.setText(String.format("%.2f", timeSeconds) + getString(R.string.seconds_suffix));
 
         buttonNewGame.setOnClickListener(this);
         buttonMainMenu.setOnClickListener(this);
