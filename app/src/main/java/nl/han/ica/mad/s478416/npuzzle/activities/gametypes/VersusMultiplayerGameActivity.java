@@ -2,6 +2,7 @@ package nl.han.ica.mad.s478416.npuzzle.activities.gametypes;
 
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -21,11 +22,11 @@ public class VersusMultiplayerGameActivity extends AbstractMultiplayerGameActivi
 	}
 
 	protected void onOpponentReady(){
-
+		Log.d("VERSUSMULTIPLAYER", "OPPONENT IS READY!!");
 	}
 
 	protected void onReceivedShuffle(int[] sequence){
-
+		Log.d("VERSUSMULTIPLAYER", "RECEIVED SHUFFLE!!!");
 	}
 
 	protected void onOpponentMove(int pieceId){
