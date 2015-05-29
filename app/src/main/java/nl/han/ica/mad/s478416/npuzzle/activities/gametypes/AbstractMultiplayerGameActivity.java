@@ -4,16 +4,15 @@ import android.content.Intent;
 import android.content.IntentSender;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.view.WindowManager;
-import android.widget.Button;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.games.Game;
 import com.google.android.gms.games.Games;
 import com.google.android.gms.games.GamesStatusCodes;
-import com.google.android.gms.games.internal.constants.RoomStatus;
 import com.google.android.gms.games.multiplayer.Participant;
 import com.google.android.gms.games.multiplayer.realtime.RealTimeMessageReceivedListener;
 import com.google.android.gms.games.multiplayer.realtime.RealTimeMessage;
@@ -23,17 +22,14 @@ import com.google.android.gms.games.multiplayer.realtime.RoomStatusUpdateListene
 import com.google.android.gms.games.multiplayer.realtime.RoomUpdateListener;
 import com.google.android.gms.plus.Plus;
 
-import java.lang.reflect.Field;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
-import java.util.regex.Pattern;
 
+import butterknife.ButterKnife;
 import butterknife.InjectView;
 import nl.han.ica.mad.s478416.npuzzle.R;
 import nl.han.ica.mad.s478416.npuzzle.activities.MainMenuActivity;
-import nl.han.ica.mad.s478416.npuzzle.activities.SelectDifficultyActivity;
 import nl.han.ica.mad.s478416.npuzzle.model.Difficulty;
 import nl.han.ica.mad.s478416.npuzzle.utils.ByteUtils;
 import nl.han.ica.mad.s478416.npuzzle.utils.PuzzleImageUtils;
@@ -52,19 +48,25 @@ public abstract class AbstractMultiplayerGameActivity extends AbstractGameActivi
 	private static final char FINISHED = 'F';
 	private static final char QUIT = 'Q';
 
+	@InjectView(R.id.connectionStatusLayout) RelativeLayout connectionStatusLayout;
+	@InjectView(R.id.connectionStatusText) TextView connectionStatusText;
+
 	protected GoogleApiClient googleApiClient;
 
 	private String roomId;
-	private String myId = null;
-	private Participant opponent = null;
+	private String myId;
+	protected Participant me;
+	protected Participant opponent;
+	protected Participant gameLeader;
 
-	private boolean iAmGameLeader;
 	private Integer myDiceRoll;
 	private Integer opponentsDiceRoll;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		setContentView(R.layout.activity_abstract_multiplayer_game);
+		ButterKnife.inject(this);
 		getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
 		googleApiClient = new GoogleApiClient.Builder(this)
@@ -79,6 +81,7 @@ public abstract class AbstractMultiplayerGameActivity extends AbstractGameActivi
 	protected void onStart() {
 		if (googleApiClient == null || !googleApiClient.isConnected()) {
 			Log.d(TAG, "Connecting to Google API");
+			connectionStatusText.setText("Connecting to Google API");
 			googleApiClient.connect();
 		}
 
@@ -92,7 +95,6 @@ public abstract class AbstractMultiplayerGameActivity extends AbstractGameActivi
 	}
 
 	public void onConnected(Bundle bundle) {
-		Log.d(TAG, "onConnected");
 		startQuickGame();
 	}
 
@@ -141,9 +143,9 @@ public abstract class AbstractMultiplayerGameActivity extends AbstractGameActivi
 	}
 
 	// room events
-	@Override public void onRoomCreated(int i, Room room) 						{ updateRoom(room); }
-	@Override public void onRoomAutoMatching(Room room) 						{ updateRoom(room); }
-	@Override public void onRoomConnecting(Room room) 							{ updateRoom(room); }
+	@Override public void onRoomCreated(int i, Room room) 						{ Log.d(TAG, "onRoomCreated"); updateRoom(room); }
+	@Override public void onRoomAutoMatching(Room room) 						{ Log.d(TAG, "onRoomAutoMatching"); updateRoom(room); }
+	@Override public void onRoomConnecting(Room room) 							{ Log.d(TAG, "onRoomConnecting"); updateRoom(room); }
 	// peer events
 	@Override public void onPeerLeft(Room room, List<String> strings) 			{ updateRoom(room); }
 	@Override public void onPeerDeclined(Room room, List<String> strings) 		{ updateRoom(room); }
@@ -159,19 +161,15 @@ public abstract class AbstractMultiplayerGameActivity extends AbstractGameActivi
 	}
 
 	@Override
-	public void onJoinedRoom(int statusCode, Room room) {
-		Log.d(TAG, "onJoinedRoom(" + statusCode + ", " + room + ")");
-		if (statusCode != GamesStatusCodes.STATUS_OK) {
-			Log.e(TAG, "*** Error: onRoomConnected, status " + statusCode);
-		}
-	}
+	public void onJoinedRoom(int statusCode, Room room) { updateRoom(room); }
 
 	@Override
 	public void onConnectedToRoom(Room room) {
 		Log.d(TAG, "onConnectedToRoom");
-		roomId = room.getRoomId();
-		myId = room.getParticipantId(Games.Players.getCurrentPlayerId(googleApiClient));
-		opponent = room.getParticipants().get(0).getParticipantId() == myId ? room.getParticipants().get(1) : room.getParticipants().get(0);
+		this.roomId = room.getRoomId();
+		this.myId = room.getParticipantId(Games.Players.getCurrentPlayerId(googleApiClient));
+		this.me = room.getParticipants().get(0).getParticipantId() == myId ? room.getParticipants().get(0) : room.getParticipants().get(1);
+		this.opponent = room.getParticipants().get(0).getParticipantId() == myId ? room.getParticipants().get(1) : room.getParticipants().get(0);
 	}
 
 	@Override
@@ -183,46 +181,48 @@ public abstract class AbstractMultiplayerGameActivity extends AbstractGameActivi
 		}
 
 		Log.d(TAG, "onRoomConnected");
+		connectionStatusText.setText("Found an opponent!");
 
-		// start npuzzle setup
-		rollDice();
+		determineGameLeader();
 	}
 
 	/* nPuzzle logic*/
 
-	private void rollDice(){
-		Random rand = new Random();
-		myDiceRoll = rand.nextInt(127);
-		sendDiceRoll(myDiceRoll);
+	private void determineGameLeader() {
+		if (this.myDiceRoll == null) rollDice();
+		if (this.opponentsDiceRoll == null) return;
 
-		if(this.opponentsDiceRoll != null){
+		Log.d(TAG, "DeterminingGameLeader");
+
+		if (myDiceRoll == opponentsDiceRoll) {
+			// dice rolls are equal, roll again
+			myDiceRoll = null;
+			opponentsDiceRoll = null;
 			determineGameLeader();
+		} else {
+			this.gameLeader = (myDiceRoll > opponentsDiceRoll) ? me : opponent;
+
+			if (this.gameLeader == this.me) {
+				chooseImage();
+				chooseDifficulty();
+			}
 		}
+	}
+
+	private void rollDice(){
+		Log.d(TAG, "rollDice");
+		myDiceRoll = new Random().nextInt(127);
+		sendDiceRoll(myDiceRoll);
 	}
 
 	private void onDiceRollReceived(int opponentsDiceRoll){
+		Log.d(TAG, "onDiceRollReceived");
 		this.opponentsDiceRoll = opponentsDiceRoll;
-
-		if(myDiceRoll != null){
-			determineGameLeader();
-		}
+		determineGameLeader();
 	}
 
-	private void determineGameLeader(){
-		if(myDiceRoll == opponentsDiceRoll){
-			myDiceRoll = null;
-			opponentsDiceRoll = null;
-			rollDice();
-		} else {
-			iAmGameLeader = myDiceRoll > opponentsDiceRoll;
-
-			if (iAmGameLeader) {
-				Log.d(TAG, "I AM THE GAME LEADER!!");
-				chooseImage();
-			} else {
-				Log.d(TAG, "OPPONENT IS THE GAME LEADER!!");
-			}
-		}
+	protected void hideConnectionStatusView(){
+		connectionStatusLayout.setVisibility(View.GONE);
 	}
 
 	private void chooseImage(){
@@ -231,13 +231,10 @@ public abstract class AbstractMultiplayerGameActivity extends AbstractGameActivi
 
 		this.sendImageChoice(randomImageIndex);
 		onImageChoiceReceived(imageResIds.get(randomImageIndex));
-
-		chooseDifficulty();
 	}
 
 	private void chooseDifficulty(){
 		Difficulty chosen = Difficulty.EASY;
-
 		sendDifficultyChoice(chosen);
 		onDifficultyChoiceReceived(chosen);
 	}
@@ -246,9 +243,7 @@ public abstract class AbstractMultiplayerGameActivity extends AbstractGameActivi
 	public void onRealTimeMessageReceived(RealTimeMessage rtm) {
 		byte[] data = rtm.getMessageData();
 
-		Log.d(TAG, "REAL TIME MESSAGED RECEIVED : " + data[0]);
-
-		switch(data[0]){
+		switch (data[0]) {
 			case READY:
 				onOpponentReady();
 				break;
@@ -262,16 +257,16 @@ public abstract class AbstractMultiplayerGameActivity extends AbstractGameActivi
 				onImageChoiceReceived(imgResId);
 				break;
 			case DIFFICULTY_CHOICE:
-				byte[] difficultyStringBytes = Arrays.copyOfRange(data, 1, data.length);
-				String difficultyString = new String(difficultyStringBytes);
-				Log.d(TAG, "RECEIVED THIS DIFFICULTY STRING: " + difficultyString);
-				Difficulty difficulty = Difficulty.valueOf(difficultyString);
+				byte[] difficultyBytes = Arrays.copyOfRange(data, 1, data.length);
+				Difficulty difficulty = Difficulty.valueOf( new String(difficultyBytes) );
 				onDifficultyChoiceReceived(difficulty);
 				break;
 			case SHUFFLE:
-				int[] sequence = {3, 4, 5};
-				// decode shuffle sequence from byte[]
-				onShuffleReceived(sequence);
+				byte[] shuffleSequenceBytes = Arrays.copyOfRange(data, 1, data.length);
+				int[] shuffleSequence = new int[shuffleSequenceBytes.length];
+				for (int i = 0; i < shuffleSequenceBytes.length; i++) { shuffleSequence[i] = (int) shuffleSequenceBytes[i]; }
+
+				onShuffleReceived(shuffleSequence);
 				break;
 			case MOVE:
 				int pieceId = (int) data[1];
@@ -297,11 +292,11 @@ public abstract class AbstractMultiplayerGameActivity extends AbstractGameActivi
 
 	protected void sendReady(){
 		byte[] msg = { (byte) READY };
-		Log.d(TAG, "SENDING MESSAGE: READY - TO: " + opponent.getDisplayName());
 		sendMessage(msg);
 	}
 
 	protected void sendDiceRoll(int number){
+		Log.d(TAG, "sendDiceRoll");
 		byte[] msg = { (byte) DICE_ROLL, (byte) number };
 		sendMessage(msg);
 	}
@@ -316,9 +311,7 @@ public abstract class AbstractMultiplayerGameActivity extends AbstractGameActivi
 
 		byte[] msg = new byte[difficultyBytes.length + 1];
 		msg[0] =  (byte) DIFFICULTY_CHOICE;
-		for(int i = 0; i < difficultyBytes.length; i++){
-			msg[i + 1] = difficultyBytes[i];
-		}
+		for (int i = 0; i < difficultyBytes.length; i++){ msg[i + 1] = difficultyBytes[i]; }
 
 		sendMessage(msg);
 	}

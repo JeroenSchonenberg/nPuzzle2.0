@@ -3,6 +3,7 @@ package nl.han.ica.mad.s478416.npuzzle.views;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.util.Log;
 import android.view.View;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
@@ -29,6 +30,7 @@ public class PuzzleView extends RelativeLayout {
 	private static final int PUZZLE_PIECE_FADE_DURATION = PICASSO_FADE_DURATION + 50;	// in ms
 
 	private ArrayList<IPuzzleViewObserver> observers;
+	public boolean doneLoading = false;
 
 	private Integer[] customArrangement;
     private boolean bitmapsInitialized;
@@ -61,19 +63,26 @@ public class PuzzleView extends RelativeLayout {
 
 	public PuzzleView(Context context, int baseImageResId, int gridSize, Integer[] customArrangement) {
 		this(context, baseImageResId, gridSize);
-
 		this.customArrangement = customArrangement;
 	}
 
     @Override
     public void onSizeChanged (int width, int height, int oldWidth, int oldHeight){
-        super.onSizeChanged(width, height, oldWidth, oldHeight);
-        LayoutParams params = new LayoutParams(width, width);
-        params.addRule(RelativeLayout.CENTER_IN_PARENT);
+		super.onSizeChanged(width, height, oldWidth, oldHeight);
+
+		LayoutParams params = (RelativeLayout.LayoutParams) getLayoutParams();
+		params.width = width;
+		params.height = width;
         this.setLayoutParams(params);
 
         initBitmaps();
     }
+
+	public void addLayoutRule(int verb) {
+		LayoutParams params = (RelativeLayout.LayoutParams) getLayoutParams();
+		params.addRule(verb);
+		this.setLayoutParams(params);
+	}
 
     private void initBitmaps(){
 		if (bitmapsInitialized) return;
@@ -113,6 +122,8 @@ public class PuzzleView extends RelativeLayout {
 			a.setFillAfter(true);
 			p.startAnimation(a);
 		}
+
+		this.doneLoading = true;
 
 		notifyObservers();
 	}

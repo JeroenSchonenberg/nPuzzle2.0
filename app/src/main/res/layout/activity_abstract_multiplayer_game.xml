@@ -1,0 +1,36 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:tools="http://schemas.android.com/tools"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                tools:context="nl.han.ica.mad.s478416.npuzzle.activities.gametypes.VersusMultiplayerGameActivity"
+                android:padding="@dimen/activity_vertical_margin">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/gameLayout"
+        android:layout_alignParentStart="false">
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:id="@+id/connectionStatusLayout"
+        android:visibility="visible"
+        android:background="#FFFFFFFF">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:id="@+id/connectionStatusText"
+            android:elegantTextHeight="false"
+            android:textStyle="bold"
+            android:textSize="@dimen/extra_large_text_size"
+            android:textAllCaps="true"
+            android:text="Connecting..."
+            android:layout_centerInParent="true"/>
+    </RelativeLayout>
+
+</RelativeLayout>
