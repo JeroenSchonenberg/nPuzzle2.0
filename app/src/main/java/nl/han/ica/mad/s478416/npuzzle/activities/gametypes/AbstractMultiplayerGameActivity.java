@@ -30,6 +30,8 @@ import butterknife.ButterKnife;
 import butterknife.InjectView;
 import nl.han.ica.mad.s478416.npuzzle.R;
 import nl.han.ica.mad.s478416.npuzzle.activities.MainMenuActivity;
+import nl.han.ica.mad.s478416.npuzzle.activities.SelectDifficultyActivity;
+import nl.han.ica.mad.s478416.npuzzle.activities.SelectImageActivity;
 import nl.han.ica.mad.s478416.npuzzle.model.Difficulty;
 import nl.han.ica.mad.s478416.npuzzle.utils.ByteUtils;
 import nl.han.ica.mad.s478416.npuzzle.utils.PuzzleImageUtils;
@@ -38,7 +40,10 @@ public abstract class AbstractMultiplayerGameActivity extends AbstractGameActivi
 		GoogleApiClient.OnConnectionFailedListener, RealTimeMessageReceivedListener, RoomUpdateListener, RoomStatusUpdateListener {
 	private static String TAG = "AbstractMultiplayerGameActivity";
 
-	private static int RC_SIGN_IN = 9001;
+	private static final int RC_SIGN_IN = 9001;
+	private static final int SELECT_DIFFICULTY_REQUEST = 1;
+	private static final int SELECT_IMAGE_REQUEST = 2;
+
 	private static final char READY = 'R';
 	private static final char DICE_ROLL = 'A'; // r and d are both occupied ):
 	private static final char IMAGE_CHOICE = 'I';
@@ -48,6 +53,7 @@ public abstract class AbstractMultiplayerGameActivity extends AbstractGameActivi
 	private static final char FINISHED = 'F';
 	private static final char QUIT = 'Q';
 
+	@InjectView(R.id.gameLayout) RelativeLayout gameLayout;
 	@InjectView(R.id.connectionStatusLayout) RelativeLayout connectionStatusLayout;
 	@InjectView(R.id.connectionStatusText) TextView connectionStatusText;
 
@@ -69,6 +75,9 @@ public abstract class AbstractMultiplayerGameActivity extends AbstractGameActivi
 		ButterKnife.inject(this);
 		getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
+		connectionStatusText.setText("");
+		gameLayout.setVisibility(View.INVISIBLE);	// never ever set this to gone
+
 		googleApiClient = new GoogleApiClient.Builder(this)
 				.addConnectionCallbacks(this)
 				.addOnConnectionFailedListener(this)
@@ -80,8 +89,7 @@ public abstract class AbstractMultiplayerGameActivity extends AbstractGameActivi
 	@Override
 	protected void onStart() {
 		if (googleApiClient == null || !googleApiClient.isConnected()) {
-			Log.d(TAG, "Connecting to Google API");
-			connectionStatusText.setText("Connecting to Google API");
+			updateConnectionStatus("Connecting to servers...");
 			googleApiClient.connect();
 		}
 
@@ -90,11 +98,12 @@ public abstract class AbstractMultiplayerGameActivity extends AbstractGameActivi
 
 	@Override
 	protected void onStop() {
-		leaveRoom();
+		//leaveRoom();
 		super.onStop();
 	}
 
 	public void onConnected(Bundle bundle) {
+		updateConnectionStatus("Connected succesfully!");
 		startQuickGame();
 	}
 
@@ -127,13 +136,30 @@ public abstract class AbstractMultiplayerGameActivity extends AbstractGameActivi
 		rtmConfigBuilder.setAutoMatchCriteria(autoMatchCriteria);
 
 		Games.RealTimeMultiplayer.create(googleApiClient, rtmConfigBuilder.build());
+		updateConnectionStatus("Looking for an opponent...");
 	}
 
+	@Override public void onP2PDisconnected(String participant) {}
+	@Override public void onP2PConnected(String participant) {}
+	@Override public void onJoinedRoom(int statusCode, Room room) 				{ Log.d(TAG, "onJoinedRoom");		updateRoom(room); }
+	@Override public void onRoomCreated(int i, Room room) 						{ Log.d(TAG, "onRoomCreated"); 		updateRoom(room); }
+	@Override public void onRoomAutoMatching(Room room) 						{ Log.d(TAG, "onRoomAutoMatching"); updateRoom(room); }
+	@Override public void onRoomConnecting(Room room) 							{ Log.d(TAG, "onRoomConnecting"); 	updateRoom(room); }
+	@Override public void onPeerLeft(Room room, List<String> strings) 			{ Log.d(TAG, "onPeerLeft");			updateRoom(room); }
+	@Override public void onPeerDeclined(Room room, List<String> strings) 		{ Log.d(TAG, "onPeerDeclined");		updateRoom(room); }
+	@Override public void onPeerInvitedToRoom(Room room, List<String> strings) 	{ Log.d(TAG, "onPeerInvited");		updateRoom(room); }
+	@Override public void onPeerJoined(Room room, List<String> strings) 		{ Log.d(TAG, "onPeerJoined");		updateRoom(room); }
+	@Override public void onPeersConnected(Room room, List<String> strings) 	{ Log.d(TAG, "onPeerConnected");	updateRoom(room); }
+	@Override public void onPeersDisconnected(Room room, List<String> strings) 	{ Log.d(TAG, "onPeerDisconnected");	updateRoom(room); }
+
+	public void updateRoom(Room room) {
+		roomId = room.getRoomId();
+	}
 
 	@Override public void onDisconnectedFromRoom(Room room) {
 		roomId = null;
 		Log.d(TAG, "onDisconnectedFromRoom");
-		//goToMainMenu();
+		goToMainMenu();
 	}
 
 	@Override
@@ -142,34 +168,10 @@ public abstract class AbstractMultiplayerGameActivity extends AbstractGameActivi
 		goToMainMenu();
 	}
 
-	// room events
-	@Override public void onRoomCreated(int i, Room room) 						{ Log.d(TAG, "onRoomCreated"); updateRoom(room); }
-	@Override public void onRoomAutoMatching(Room room) 						{ Log.d(TAG, "onRoomAutoMatching"); updateRoom(room); }
-	@Override public void onRoomConnecting(Room room) 							{ Log.d(TAG, "onRoomConnecting"); updateRoom(room); }
-	// peer events
-	@Override public void onPeerLeft(Room room, List<String> strings) 			{ updateRoom(room); }
-	@Override public void onPeerDeclined(Room room, List<String> strings) 		{ updateRoom(room); }
-	@Override public void onPeerInvitedToRoom(Room room, List<String> strings) 	{ updateRoom(room); }
-	@Override public void onPeerJoined(Room room, List<String> strings) 		{ updateRoom(room); }
-	@Override public void onPeersConnected(Room room, List<String> strings) 	{ updateRoom(room); }
-	@Override public void onPeersDisconnected(Room room, List<String> strings) 	{ updateRoom(room); }
-	@Override public void onP2PDisconnected(String participant) {}
-	@Override public void onP2PConnected(String participant) {}
-
-	public void updateRoom(Room room) {
-		roomId = room.getRoomId();
-	}
-
-	@Override
-	public void onJoinedRoom(int statusCode, Room room) { updateRoom(room); }
-
 	@Override
 	public void onConnectedToRoom(Room room) {
 		Log.d(TAG, "onConnectedToRoom");
-		this.roomId = room.getRoomId();
-		this.myId = room.getParticipantId(Games.Players.getCurrentPlayerId(googleApiClient));
-		this.me = room.getParticipants().get(0).getParticipantId() == myId ? room.getParticipants().get(0) : room.getParticipants().get(1);
-		this.opponent = room.getParticipants().get(0).getParticipantId() == myId ? room.getParticipants().get(1) : room.getParticipants().get(0);
+		updateConnectionStatus("Found an opponent!");
 	}
 
 	@Override
@@ -181,8 +183,12 @@ public abstract class AbstractMultiplayerGameActivity extends AbstractGameActivi
 		}
 
 		Log.d(TAG, "onRoomConnected");
-		connectionStatusText.setText("Found an opponent!");
+		this.roomId = room.getRoomId();
+		this.myId = room.getParticipantId(Games.Players.getCurrentPlayerId(googleApiClient));
+		this.me = room.getParticipants().get(0).getParticipantId() == myId ? room.getParticipants().get(0) : room.getParticipants().get(1);
+		this.opponent = room.getParticipants().get(0).getParticipantId() == myId ? room.getParticipants().get(1) : room.getParticipants().get(0);
 
+		updateConnectionStatus("Picking a gameleader by rolling dices...");
 		determineGameLeader();
 	}
 
@@ -192,10 +198,7 @@ public abstract class AbstractMultiplayerGameActivity extends AbstractGameActivi
 		if (this.myDiceRoll == null) rollDice();
 		if (this.opponentsDiceRoll == null) return;
 
-		Log.d(TAG, "DeterminingGameLeader");
-
 		if (myDiceRoll == opponentsDiceRoll) {
-			// dice rolls are equal, roll again
 			myDiceRoll = null;
 			opponentsDiceRoll = null;
 			determineGameLeader();
@@ -203,8 +206,11 @@ public abstract class AbstractMultiplayerGameActivity extends AbstractGameActivi
 			this.gameLeader = (myDiceRoll > opponentsDiceRoll) ? me : opponent;
 
 			if (this.gameLeader == this.me) {
-				chooseImage();
-				chooseDifficulty();
+				updateConnectionStatus("You are the leader and get to choose an image and difficulty!");
+
+				startActivityForResult(new Intent(this, SelectDifficultyActivity.class), SELECT_DIFFICULTY_REQUEST);
+			} else {
+				updateConnectionStatus("Your opponent is the leader and gets to choose an image and difficulty!");
 			}
 		}
 	}
@@ -212,17 +218,21 @@ public abstract class AbstractMultiplayerGameActivity extends AbstractGameActivi
 	private void rollDice(){
 		Log.d(TAG, "rollDice");
 		myDiceRoll = new Random().nextInt(127);
+		updateConnectionStatus("You rolled a " + myDiceRoll);
 		sendDiceRoll(myDiceRoll);
 	}
 
 	private void onDiceRollReceived(int opponentsDiceRoll){
 		Log.d(TAG, "onDiceRollReceived");
+		updateConnectionStatus("Opponent rolled a " + opponentsDiceRoll);
 		this.opponentsDiceRoll = opponentsDiceRoll;
 		determineGameLeader();
 	}
 
 	protected void hideConnectionStatusView(){
+		Log.d(TAG, "hideConnectionStatusView");
 		connectionStatusLayout.setVisibility(View.GONE);
+		gameLayout.setVisibility(View.VISIBLE);
 	}
 
 	private void chooseImage(){
@@ -233,15 +243,45 @@ public abstract class AbstractMultiplayerGameActivity extends AbstractGameActivi
 		onImageChoiceReceived(imageResIds.get(randomImageIndex));
 	}
 
-	private void chooseDifficulty(){
-		Difficulty chosen = Difficulty.EASY;
-		sendDifficultyChoice(chosen);
-		onDifficultyChoiceReceived(chosen);
+	private void onDifficultySelected(Difficulty difficulty){
+		sendDifficultyChoice(difficulty);
+		onDifficultyChoiceReceived(difficulty);
+		startActivityForResult(new Intent(this, SelectImageActivity.class), SELECT_IMAGE_REQUEST);
+	}
+
+	private void onImageSelected(int imgResId) {
+		int index = PuzzleImageUtils.getImgResIds().indexOf(imgResId);
+		Log.d(TAG, "INDEX IS OF " + imgResId + " IS " + index);
+		this.sendImageChoice(index);
+		onImageChoiceReceived(imgResId);
+	}
+
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		switch (requestCode) {
+			case SELECT_DIFFICULTY_REQUEST:
+				if (resultCode == RESULT_OK) {
+					Difficulty difficulty = (Difficulty) data.getSerializableExtra( getString(R.string.key_difficulty) );
+					onDifficultySelected(difficulty);
+					Log.d(TAG, "SELECTED DIFFICULTY IS " + difficulty.toString());
+				}
+				break;
+			case SELECT_IMAGE_REQUEST:
+				if (resultCode == RESULT_OK) {
+					int imgResId = data.getIntExtra(getString(R.string.key_image), 0);
+					onImageSelected(imgResId);
+					Log.d(TAG, "SELECTED IMG RES ID IS " + imgResId);
+				}
+				break;
+			default:
+				break;
+		}
 	}
 
 	@Override
 	public void onRealTimeMessageReceived(RealTimeMessage rtm) {
 		byte[] data = rtm.getMessageData();
+		Log.d(TAG, "onRealTimeMessageReceived: " + (char)data[0]);
 
 		switch (data[0]) {
 			case READY:
@@ -296,7 +336,6 @@ public abstract class AbstractMultiplayerGameActivity extends AbstractGameActivi
 	}
 
 	protected void sendDiceRoll(int number){
-		Log.d(TAG, "sendDiceRoll");
 		byte[] msg = { (byte) DICE_ROLL, (byte) number };
 		sendMessage(msg);
 	}
@@ -347,6 +386,11 @@ public abstract class AbstractMultiplayerGameActivity extends AbstractGameActivi
 	}
 
 	// * MISC* //
+
+	private void updateConnectionStatus(String newStatus){
+		String currentText = connectionStatusText.getText().toString();
+		connectionStatusText.setText(currentText + "\n" + newStatus);
+	}
 
 	private void goToMainMenu(){
 		startActivity(new Intent(this, MainMenuActivity.class));

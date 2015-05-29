@@ -30,10 +30,17 @@ public class SelectImageActivity extends Activity {
         @Override public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
             int imageResId = (Integer) gridView.getItemAtPosition(position);
 
+			Intent returnIntent = new Intent();
+			returnIntent.putExtra(getString(R.string.key_image), imageResId);
+			setResult(RESULT_OK,returnIntent);
+			finish();
+
+			/*
             Intent intent = new Intent(SelectImageActivity.this, SingleplayerGameActivity.class);
 			intent.putExtra(getString(R.string.key_image), imageResId);
             intent.putExtras(getIntent().getExtras());   // pass on all the settings we received
             SelectImageActivity.this.startActivity(intent);
+            */
         }
     };
 }

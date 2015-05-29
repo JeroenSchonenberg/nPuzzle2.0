@@ -48,8 +48,15 @@ public class SelectDifficultyActivity extends Activity implements View.OnClickLi
 	}
 
     public void startChoosePuzzleActivity(Difficulty chosenDifficulty) {
+		Intent returnIntent = new Intent();
+		returnIntent.putExtra(getString(R.string.key_difficulty), chosenDifficulty);
+		setResult(RESULT_OK,returnIntent);
+		finish();
+
+		/*
         Intent intent = new Intent(SelectDifficultyActivity.this, SelectImageActivity.class);
         intent.putExtra(getString(R.string.key_difficulty), chosenDifficulty);
         SelectDifficultyActivity.this.startActivity(intent);
+        */
     }
 }

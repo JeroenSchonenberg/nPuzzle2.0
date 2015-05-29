@@ -87,6 +87,8 @@ public class PuzzleView extends RelativeLayout {
     private void initBitmaps(){
 		if (bitmapsInitialized) return;
 
+		Log.d("PuzzleView", "initBitmaps");
+
 		Picasso.with(getContext())
 			.load(imgResId)
 			.resize(getLayoutParams().width, getLayoutParams().width)

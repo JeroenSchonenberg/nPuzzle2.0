@@ -1,5 +1,6 @@
 package nl.han.ica.mad.s478416.npuzzle.activities.gametypes;
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
@@ -44,6 +45,16 @@ public class VersusMultiplayerGameActivity extends AbstractMultiplayerGameActivi
 		ButterKnife.inject(this);
 	}
 
+	protected void onImageChoiceReceived(int imgResId){
+		this.imgResId = imgResId;
+		tryInitGameView();
+	}
+
+	protected void onDifficultyChoiceReceived(Difficulty difficulty){
+		this.difficulty = difficulty;
+		tryInitGameView();
+	}
+
 	private void tryInitGameView(){
 		if (imgResId == null) return;
 		if (difficulty == null) return;
@@ -52,6 +63,7 @@ public class VersusMultiplayerGameActivity extends AbstractMultiplayerGameActivi
 		this.myPuzzleModel.addObserver(this);
 
 		this.myPuzzleView = new PuzzleView(this, this.imgResId, this.difficulty.getGridSize(), null);
+		this.myPuzzleView.setOnPieceClickListener(onMyPuzzlePieceClick);
 		this.myPuzzleView.setLayoutParams(new RelativeLayout.LayoutParams(gameLayout.getWidth(), ViewGroup.LayoutParams.WRAP_CONTENT));
 		this.myPuzzleView.addLayoutRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
 		this.myPuzzleView.addLayoutRule(RelativeLayout.CENTER_HORIZONTAL);
@@ -77,42 +89,48 @@ public class VersusMultiplayerGameActivity extends AbstractMultiplayerGameActivi
 		}
 	}
 
-	public void onPuzzleFinished(final PuzzleModel model) {
-	}
+	View.OnClickListener onMyPuzzlePieceClick = new View.OnClickListener() {
+		@Override public void onClick(View v) {
+			int pieceNumber = myPuzzleView.getPieceNumber(v);
+
+			if(myPuzzleModel.pieceNeighboursEmptySlot(pieceNumber)){
+				myPuzzleView.animateSlidePieceToSlot(pieceNumber, myPuzzleModel.getEmptySlot());
+				myPuzzleModel.movePieceToEmptySlot(pieceNumber);
+				sendMove(pieceNumber);
+			}
+		}
+	};
 
 	protected void onOpponentReady(){
 		if (gameLeader == me) {
 			int[] shuffleSequence = ShuffleUtil.genShuffleSequence(50, myPuzzleModel.getGridSize(), myPuzzleModel.getEmptySlot());
 
-			//shuffle(myPuzzleView, myPuzzleModel, shuffleSequence);
-			//shuffle(opponentsPuzzleView, opponentsPuzzleModel, shuffleSequence);
+			shuffle(myPuzzleView, myPuzzleModel, shuffleSequence);
+			shuffle(opponentsPuzzleView, opponentsPuzzleModel, shuffleSequence);
 			sendShuffleSequence(shuffleSequence);
 		}
-
-		// if leader -> throw shuffle
-		// else do no thing
-	}
-
-	protected void onImageChoiceReceived(int imgResId){
-		this.imgResId = imgResId;
-		tryInitGameView();
-	}
-
-	protected void onDifficultyChoiceReceived(Difficulty difficulty){
-		this.difficulty = difficulty;
-		tryInitGameView();
 	}
 
 	protected void onShuffleReceived(int[] sequence){
-		Log.d(TAG, "RECEIVED SHUFFLE: " + sequence);
+		shuffle(myPuzzleView, myPuzzleModel, sequence);
+		shuffle(opponentsPuzzleView, opponentsPuzzleModel, sequence);
 	}
 
 	protected void onOpponentMove(int pieceId){
+		opponentsPuzzleView.animateSlidePieceToSlot(pieceId, opponentsPuzzleModel.getEmptySlot());
+		opponentsPuzzleModel.movePieceToEmptySlot(pieceId);
+	}
 
+	// IPuzzleModelObserver implementation
+	public void onPuzzleFinished(final PuzzleModel model) {
+		int time = model.getTime();
+
+		Log.d(TAG, "PUZZLE FINISHED, TIME = " + time);
+		sendFinished(time);
 	}
 
 	protected void onOpponentFinished(int time){
-
+		Log.d(TAG, "OPPONENT FINISHED, TIME = " + time);
 	}
 
 	protected void onOpponentQuit() {

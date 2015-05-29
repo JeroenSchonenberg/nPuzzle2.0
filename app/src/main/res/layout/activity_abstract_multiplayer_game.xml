@@ -9,7 +9,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:id="@+id/gameLayout"
-        android:layout_alignParentStart="false">
+        >
 
     </RelativeLayout>
 
@@ -18,19 +18,20 @@
         android:layout_height="fill_parent"
         android:id="@+id/connectionStatusLayout"
         android:visibility="visible"
-        android:background="#FFFFFFFF">
+        >
 
         <TextView
-            android:layout_width="wrap_content"
+            android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceLarge"
             android:id="@+id/connectionStatusText"
             android:elegantTextHeight="false"
             android:textStyle="bold"
-            android:textSize="@dimen/extra_large_text_size"
-            android:textAllCaps="true"
-            android:text="Connecting..."
-            android:layout_centerInParent="true"/>
+            android:textSize="@dimen/small_text_size"
+            android:textAllCaps="false"
+            android:layout_centerVertical="true"
+            android:gravity="center"
+            android:text="Connection status..."/>
     </RelativeLayout>
 
 </RelativeLayout>

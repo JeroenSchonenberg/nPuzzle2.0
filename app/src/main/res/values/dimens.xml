@@ -5,6 +5,7 @@
     <dimen name="default_padding">8dp</dimen>
     <dimen name="default_button_padding">16dp</dimen>
 
+    <dimen name="small_text_size">14dp</dimen>
     <dimen name="normal_text_size">18dp</dimen>
     <dimen name="extra_large_text_size">22dp</dimen>
     <dimen name="title_size">32sp</dimen>
