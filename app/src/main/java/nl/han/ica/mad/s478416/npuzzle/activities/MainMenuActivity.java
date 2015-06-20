@@ -1,7 +1,6 @@
 package nl.han.ica.mad.s478416.npuzzle.activities;
 
 import android.app.Activity;
-import android.app.ActivityOptions;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -10,7 +9,7 @@ import android.widget.Button;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import nl.han.ica.mad.s478416.npuzzle.R;
-import nl.han.ica.mad.s478416.npuzzle.activities.gametypes.SingleplayerGameActivity;
+import nl.han.ica.mad.s478416.npuzzle.activities.gametypes.SingleplayerActivity;
 import nl.han.ica.mad.s478416.npuzzle.SavegameManager;
 
 public class MainMenuActivity extends Activity implements View.OnClickListener{
@@ -33,12 +32,12 @@ public class MainMenuActivity extends Activity implements View.OnClickListener{
 	public void onClick(View v){
 		switch(v.getId()){
 			case R.id.btn_resume_game:
-				Intent intent = new Intent(this, SingleplayerGameActivity.class);
+				Intent intent = new Intent(this, SingleplayerActivity.class);
 				intent.putExtra(getString(R.string.key_resume_game), true);
 				startActivity(intent);
 				break;
 			case R.id.btn_new_game:
-				startActivity(new Intent(this, SelectDifficultyActivity.class));
+				startActivity(new Intent(this, SingleplayerActivity.class));
 				break;
 			case R.id.btn_multiplayer_game:
 				startActivity(new Intent(this, MultiplayerMenuActivity.class));

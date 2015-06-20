@@ -43,8 +43,13 @@
     <string name="key_difficulty">difficulty</string>
     <string name="key_moves_count">movesCount</string>
     <string name="key_time">timeToSolve</string>
+    <string name="key_victory_indicator">victoryIndicator</string>
+    <string name="key_my_avatar">myAvatar</string>
+    <string name="key_opponents_avatar">opponentsAvatar</string>
     <string name="title_activity_versus_multiplayer_game">VersusMultiplayerGameActivity</string>
 
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
+    <string name="title_activity_versus_game_finished">VersusGameFinished</string>
+    <string name="title_activity_connection_lost">ConnectionLostActivity</string>
 </resources>

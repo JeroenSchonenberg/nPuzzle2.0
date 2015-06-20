@@ -44,19 +44,16 @@ public class SelectDifficultyActivity extends Activity implements View.OnClickLi
 			case R.id.btn_hard:
 				startChoosePuzzleActivity(Difficulty.HARD);
 				break;
+			default:
+				startChoosePuzzleActivity(Difficulty.MEDIUM);
+				break;
 		}
 	}
 
     public void startChoosePuzzleActivity(Difficulty chosenDifficulty) {
 		Intent returnIntent = new Intent();
 		returnIntent.putExtra(getString(R.string.key_difficulty), chosenDifficulty);
-		setResult(RESULT_OK,returnIntent);
+		setResult(RESULT_OK, returnIntent);
 		finish();
-
-		/*
-        Intent intent = new Intent(SelectDifficultyActivity.this, SelectImageActivity.class);
-        intent.putExtra(getString(R.string.key_difficulty), chosenDifficulty);
-        SelectDifficultyActivity.this.startActivity(intent);
-        */
     }
 }

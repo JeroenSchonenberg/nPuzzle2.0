@@ -14,11 +14,16 @@ import butterknife.ButterKnife;
 import butterknife.InjectView;
 import nl.han.ica.mad.s478416.npuzzle.*;
 import nl.han.ica.mad.s478416.npuzzle.activities.GameFinishedActivity;
+import nl.han.ica.mad.s478416.npuzzle.activities.SelectDifficultyActivity;
+import nl.han.ica.mad.s478416.npuzzle.activities.SelectImageActivity;
 import nl.han.ica.mad.s478416.npuzzle.model.*;
 import nl.han.ica.mad.s478416.npuzzle.utils.*;
 import nl.han.ica.mad.s478416.npuzzle.views.*;
 
-public class SingleplayerGameActivity extends AbstractGameActivity implements IPuzzleModelObserver, IPuzzleViewObserver {
+public class SingleplayerActivity extends AbstractGameActivity implements IPuzzleModelObserver, IPuzzleViewObserver {
+	private static final int SELECT_DIFFICULTY_REQUEST = 1;
+	private static final int SELECT_IMAGE_REQUEST = 2;
+
     private static final int TO_YOU_WIN_ACTIVITY_DELAY = 1500;
 	private static final int HIDE_COMPLETED_PUZZLE_DELAY = 1000;                            // in ms
 	private static final int INITIAL_SHUFFLE_DELAY = HIDE_COMPLETED_PUZZLE_DELAY + 1250;    // in ms
@@ -29,6 +34,9 @@ public class SingleplayerGameActivity extends AbstractGameActivity implements IP
 	PuzzleView view;
 	PuzzleModel model;
     SavegameManager savegameManager;
+
+	private Difficulty chosenDifficulty;
+	private Integer chosenImage;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,13 +49,52 @@ public class SingleplayerGameActivity extends AbstractGameActivity implements IP
 		// check if we're resuming a game or starting a new one
         Intent i = getIntent();
         Boolean resumeGame = i.getBooleanExtra(getString(R.string.key_resume_game), false);
-        int imgResId 			= resumeGame ? savegameManager.getSavedImgResId() 		: i.getIntExtra(getString(R.string.key_image), 0);
-		Difficulty difficulty 	= resumeGame ? savegameManager.getSavedDifficulty() 	: (Difficulty) i.getSerializableExtra(getString(R.string.key_difficulty));
-		int moveCount 			= resumeGame ? savegameManager.getSavedMoveCount() 		: 0;
-		Integer[] arrangement	= resumeGame ? savegameManager.getSavedArrangement()	: null;
 
-		initPuzzle(imgResId, difficulty, resumeGame, moveCount, arrangement);
+		if (resumeGame) {
+			int imgResId 			= savegameManager.getSavedImgResId();
+			Difficulty difficulty 	= savegameManager.getSavedDifficulty();
+			int moveCount 			= savegameManager.getSavedMoveCount();
+			Integer[] arrangement	= savegameManager.getSavedArrangement();
+			initPuzzle(imgResId, difficulty, true, moveCount, arrangement);
+		} else {
+			tryInitPuzzle();
+		}
     }
+
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		Log.d("TESTEST", "Godverdomme: " + requestCode + "  " + resultCode);
+		if (resultCode == RESULT_CANCELED) return;
+
+		switch (requestCode) {
+			case SELECT_DIFFICULTY_REQUEST:
+				this.chosenDifficulty = (Difficulty) data.getSerializableExtra( getString(R.string.key_difficulty) );
+				tryInitPuzzle();
+				break;
+
+			case SELECT_IMAGE_REQUEST:
+				this.chosenImage = data.getIntExtra(getString(R.string.key_image), 0);
+				tryInitPuzzle();
+				break;
+
+			default:
+				break;
+		}
+	}
+
+	private void tryInitPuzzle() {
+		if (chosenDifficulty == null) {
+			startActivityForResult(new Intent(this, SelectDifficultyActivity.class), SELECT_DIFFICULTY_REQUEST);
+			return;
+		}
+
+		if (chosenImage == null) {
+			startActivityForResult(new Intent(this, SelectImageActivity.class), SELECT_IMAGE_REQUEST);
+			return;
+		}
+
+		initPuzzle(chosenImage, chosenDifficulty, false, 0, null);
+	}
 
 	private void initPuzzle(int imgResId, Difficulty difficulty, boolean isShuffled, int moveCount, Integer[] arrangement){
 		this.model = new PuzzleModel(imgResId, difficulty, isShuffled, moveCount, arrangement);
@@ -63,10 +110,10 @@ public class SingleplayerGameActivity extends AbstractGameActivity implements IP
 
 	public void onPuzzleViewLoaded(PuzzleView puzzleView){
 		if(model.isShuffled()){
-			locked = false;
+			interactionDisabled = false;
 			view.hideCompletedPuzzle();
 		} else {
-			locked = true;
+			interactionDisabled = true;
 			new Handler().postDelayed(new Runnable() {
 				@Override
 				public void run() {
@@ -86,7 +133,7 @@ public class SingleplayerGameActivity extends AbstractGameActivity implements IP
 	View.OnClickListener onPuzzlePieceClick = new View.OnClickListener() {
 		@Override
 		public void onClick(View v) {
-			if (locked) return;
+			if (interactionDisabled) return;
 
 			int pieceNumber = view.getPieceNumber(v);
 
@@ -101,7 +148,7 @@ public class SingleplayerGameActivity extends AbstractGameActivity implements IP
 	protected void onPause(){
 		super.onPause();
 
-		if(model.isShuffled()) {	// saving the game only makes sense if it has been shuffled
+		if(model != null && model.isShuffled()) {	// saving the game only makes sense if it has been shuffled
 			savegameManager.save(
 					model.getImageResourceId(),
 					model.getDifficulty(),
@@ -113,7 +160,7 @@ public class SingleplayerGameActivity extends AbstractGameActivity implements IP
 
 	public void onPuzzleFinished(final PuzzleModel model){
 		view.fadeInCompletedPuzzle();
-		locked = true;
+		interactionDisabled = true;
 
 		new Handler().postDelayed(new Runnable() {
 			@Override public void run() { StartYouWinActivity(); }

@@ -1,0 +1,101 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="fill_parent" android:layout_height="fill_parent"
+              android:id="@+id/layoutContainer" android:orientation="horizontal"
+              android:baselineAligned="false">
+    <RelativeLayout
+        android:layout_width="0dip"
+        android:layout_height="fill_parent"
+        android:layout_weight="@dimen/container_margin_weight">
+    </RelativeLayout>
+    <RelativeLayout
+        android:layout_width="0dip"
+        android:layout_height="fill_parent"
+        android:layout_weight="@dimen/container_weight"
+        >
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/container"
+            android:layout_centerInParent="true">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:text="YOU WIN!"
+                android:id="@+id/title"
+                android:elegantTextHeight="false"
+                android:textStyle="bold"
+                android:textSize="@dimen/extra_large_text_size"
+                android:gravity="center"
+                android:textAllCaps="true"/>
+
+            <TableRow
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content">
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/myAvatar"
+                    android:longClickable="false"
+                    android:layout_columnWeight="0"
+                    android:layout_weight="1"
+                    android:layout_margin="@dimen/default_padding"
+                    android:cropToPadding="false"
+                    android:nestedScrollingEnabled="false"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    android:text="VS"
+                    android:id="@+id/textView2"
+                    android:elegantTextHeight="false"
+                    android:textStyle="bold"
+                    android:textSize="@dimen/normal_text_size"
+                    android:gravity="center"
+                    android:paddingBottom="@dimen/default_padding"
+                    android:textAllCaps="true"
+                    android:layout_gravity="center"
+                    android:layout_columnWeight="0"/>
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/opponentsAvatar"
+                    android:cropToPadding="false"
+                    android:layout_columnWeight="0"
+                    android:layout_weight="1"
+                    android:layout_margin="@dimen/default_padding"
+                    android:longClickable="false"/>
+            </TableRow>
+
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="REMATCH"
+                android:id="@+id/btn_rematch"
+                android:paddingTop="@dimen/default_button_padding"
+                android:paddingBottom="@dimen/default_button_padding"
+                android:textSize="@dimen/button_text_size"
+                />
+
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/main_menu"
+                android:id="@+id/btn_main_menu"
+                android:paddingTop="@dimen/default_button_padding"
+                android:paddingBottom="@dimen/default_button_padding"
+                android:textSize="18dp" />
+
+        </LinearLayout>
+    </RelativeLayout>
+    <RelativeLayout
+        android:layout_width="0dip"
+        android:layout_height="fill_parent"
+        android:layout_weight="@dimen/container_margin_weight">
+    </RelativeLayout>
+</LinearLayout>

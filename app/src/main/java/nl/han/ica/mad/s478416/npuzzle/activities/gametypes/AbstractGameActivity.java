@@ -10,16 +10,16 @@ import nl.han.ica.mad.s478416.npuzzle.views.PuzzleView;
 
 public abstract class AbstractGameActivity extends Activity {
 	protected static final int SHUFFLE_INTERVAL = 25;
-	protected boolean locked;
+	protected boolean interactionDisabled;
 
 	protected void shuffle(final PuzzleView view, final PuzzleModel model, int[] sequence){
 		if (sequence.length == 0){
-			locked = false;
+			interactionDisabled = false;
 			model.setShuffled();
 			model.setMoveCount(0);
 			model.resetTimer();
 		} else {
-			locked = true;
+			interactionDisabled = true;
 
 			final int piece = model.getPieceNumber(sequence[0]);
 			view.animateSlidePieceToSlot(piece, model.getEmptySlot());

@@ -2,6 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="nl.han.ica.mad.s478416.npuzzle" >
 
+    <uses-permission android:name="android.permission.INTERNET" />
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -19,15 +21,29 @@
         </activity>
         <activity android:name=".activities.SelectDifficultyActivity" />
         <activity android:name=".activities.SelectImageActivity" />
-        <activity android:name=".activities.gametypes.SingleplayerGameActivity" />
+        <activity android:name=".activities.gametypes.SingleplayerActivity" />
         <activity android:name=".activities.GameFinishedActivity" />
         <activity android:name=".activities.MultiplayerMenuActivity" />
         <activity
-            android:name=".activities.gametypes.VersusMultiplayerGameActivity"
+            android:name=".activities.gametypes.VersusMultiplayerActivity"
             android:label="@string/title_activity_versus_multiplayer_game" >
         </activity>
-        <meta-data android:name="com.google.android.gms.games.APP_ID" android:value="@string/app_id" />
-        <meta-data android:name="com.google.android.gms.version" android:value="@integer/google_play_services_version"/>
+
+        <meta-data
+            android:name="com.google.android.gms.games.APP_ID"
+            android:value="@string/app_id" />
+        <meta-data
+            android:name="com.google.android.gms.version"
+            android:value="@integer/google_play_services_version" />
+
+        <activity
+            android:name=".activities.VersusGameFinished"
+            android:label="@string/title_activity_versus_game_finished" >
+        </activity>
+        <activity
+            android:name=".activities.ConnectionLostActivity"
+            android:label="@string/title_activity_connection_lost" >
+        </activity>
     </application>
 
 </manifest>

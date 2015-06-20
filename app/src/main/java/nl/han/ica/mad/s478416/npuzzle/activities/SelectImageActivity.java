@@ -11,9 +11,8 @@ import butterknife.ButterKnife;
 import butterknife.InjectView;
 import nl.han.ica.mad.s478416.npuzzle.PuzzleImagesAdapter;
 import nl.han.ica.mad.s478416.npuzzle.R;
-import nl.han.ica.mad.s478416.npuzzle.activities.gametypes.SingleplayerGameActivity;
 
-public class SelectImageActivity extends Activity {
+public class SelectImageActivity extends Activity implements AdapterView.OnItemClickListener{
 	@InjectView (R.id.gridview_available_images) GridView gridView;
 
     @Override
@@ -23,24 +22,15 @@ public class SelectImageActivity extends Activity {
 		ButterKnife.inject(this);
 
 		gridView.setAdapter(new PuzzleImagesAdapter(this));
-		gridView.setOnItemClickListener(onGridItemClickListener);
+		gridView.setOnItemClickListener(this);
     }
 
-    AdapterView.OnItemClickListener onGridItemClickListener = new AdapterView.OnItemClickListener() {
-        @Override public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            int imageResId = (Integer) gridView.getItemAtPosition(position);
+	@Override public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+		int imageResId = (Integer) gridView.getItemAtPosition(position);
 
-			Intent returnIntent = new Intent();
-			returnIntent.putExtra(getString(R.string.key_image), imageResId);
-			setResult(RESULT_OK,returnIntent);
-			finish();
-
-			/*
-            Intent intent = new Intent(SelectImageActivity.this, SingleplayerGameActivity.class);
-			intent.putExtra(getString(R.string.key_image), imageResId);
-            intent.putExtras(getIntent().getExtras());   // pass on all the settings we received
-            SelectImageActivity.this.startActivity(intent);
-            */
-        }
-    };
+		Intent resultData = new Intent();
+		resultData.putExtra(getString(R.string.key_image), imageResId);
+		setResult(RESULT_OK, resultData);
+		finish();
+	}
 }

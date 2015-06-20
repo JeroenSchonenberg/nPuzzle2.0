@@ -2,14 +2,14 @@
                 xmlns:tools="http://schemas.android.com/tools"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                tools:context="nl.han.ica.mad.s478416.npuzzle.activities.gametypes.VersusMultiplayerGameActivity"
+                tools:context="nl.han.ica.mad.s478416.npuzzle.activities.gametypes.VersusMultiplayerActivity"
                 android:padding="@dimen/activity_vertical_margin">
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:id="@+id/gameLayout"
-        >
+        android:visibility="invisible">
 
     </RelativeLayout>
 
@@ -17,7 +17,7 @@
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:id="@+id/connectionStatusLayout"
-        android:visibility="visible"
+        android:visibility="invisible"
         >
 
         <TextView
@@ -33,5 +33,71 @@
             android:gravity="center"
             android:text="Connection status..."/>
     </RelativeLayout>
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                  android:layout_width="fill_parent"
+                  android:layout_height="fill_parent"
+                  android:id="@+id/connectionErrorLayout"
+                  android:orientation="horizontal"
+                  android:baselineAligned="false"
+                  android:visibility="visible">
+
+        <RelativeLayout
+            android:layout_width="0dip"
+            android:layout_height="fill_parent"
+            android:layout_weight="@dimen/container_margin_weight"/>
+
+        <RelativeLayout
+            android:layout_width="0dip"
+            android:layout_height="fill_parent"
+            android:layout_weight="@dimen/container_weight"
+            android:layout_marginBottom="@dimen/container_bottom_margin">
+
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_centerHorizontal="true"
+                android:id="@+id/linearLayout2">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    android:text="Connection lost"
+                    android:id="@+id/textView"
+                    android:elegantTextHeight="false"
+                    android:textStyle="bold"
+                    android:textSize="@dimen/extra_large_text_size"
+                    android:gravity="center"
+                    android:paddingBottom="@dimen/default_padding"
+                    android:textAllCaps="true"/>
+
+                <Button
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="try again"
+                    android:id="@+id/btn_try_again"
+                    android:textSize="@dimen/button_text_size"
+                    android:paddingTop="@dimen/default_button_padding"
+                    android:paddingBottom="@dimen/default_button_padding"/>
+
+                <Button
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Main Menu"
+                    android:id="@+id/btn_main_menu"
+                    android:textSize="@dimen/button_text_size"
+                    android:paddingTop="@dimen/default_button_padding"
+                    android:paddingBottom="@dimen/default_button_padding"/>
+            </LinearLayout>
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="0dip"
+            android:layout_height="fill_parent"
+            android:layout_weight="@dimen/container_margin_weight"/>
+    </LinearLayout>
 
 </RelativeLayout>

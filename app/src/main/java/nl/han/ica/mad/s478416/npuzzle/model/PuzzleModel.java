@@ -79,7 +79,7 @@ public class PuzzleModel {
 
 	public int getTime(){
 		if(startTime == null){
-			return 0;
+			return Integer.MAX_VALUE;
 		} else {
 			long time = (endTime != null) ? (endTime - startTime) : (System.nanoTime() - startTime);
 			return (int) TimeUnit.MILLISECONDS.convert(time, TimeUnit.NANOSECONDS);
