@@ -9,8 +9,8 @@ import android.widget.Button;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import nl.han.ica.mad.s478416.npuzzle.R;
+import nl.han.ica.mad.s478416.npuzzle.SavegameSQLiteManager;
 import nl.han.ica.mad.s478416.npuzzle.activities.gametypes.SingleplayerActivity;
-import nl.han.ica.mad.s478416.npuzzle.SavegameManager;
 
 public class MainMenuActivity extends Activity implements View.OnClickListener{
 	@InjectView(R.id.btn_resume_game) 		Button buttonResumeGame;
@@ -49,7 +49,7 @@ public class MainMenuActivity extends Activity implements View.OnClickListener{
     protected void onResume(){
         super.onResume();
 
-        if(new SavegameManager(getApplicationContext()).saveGameExists()){
+        if(new SavegameSQLiteManager(getApplicationContext()).saveGameExists()){
             buttonResumeGame.setVisibility(View.VISIBLE);
         } else {
             buttonResumeGame.setVisibility(View.GONE);

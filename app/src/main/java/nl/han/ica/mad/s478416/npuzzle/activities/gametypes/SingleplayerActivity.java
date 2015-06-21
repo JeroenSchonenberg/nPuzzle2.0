@@ -33,7 +33,7 @@ public class SingleplayerActivity extends AbstractGameActivity implements IPuzzl
 
 	PuzzleView view;
 	PuzzleModel model;
-    SavegameManager savegameManager;
+    SavegameSQLiteManager SQLiteSavegameManager;
 
 	private Difficulty chosenDifficulty;
 	private Integer chosenImage;
@@ -44,17 +44,18 @@ public class SingleplayerActivity extends AbstractGameActivity implements IPuzzl
         setContentView(R.layout.activity_singleplayer_game);
 		ButterKnife.inject(this);
 
-		this.savegameManager = new SavegameManager(getApplicationContext());
+        this.SQLiteSavegameManager = new SavegameSQLiteManager(getApplicationContext());
 
 		// check if we're resuming a game or starting a new one
         Intent i = getIntent();
         Boolean resumeGame = i.getBooleanExtra(getString(R.string.key_resume_game), false);
 
 		if (resumeGame) {
-			int imgResId 			= savegameManager.getSavedImgResId();
-			Difficulty difficulty 	= savegameManager.getSavedDifficulty();
-			int moveCount 			= savegameManager.getSavedMoveCount();
-			Integer[] arrangement	= savegameManager.getSavedArrangement();
+            SQLiteSavegameManager.loadSaveGame();
+			int imgResId 			= SQLiteSavegameManager.getSavedImgResId();
+			Difficulty difficulty 	= SQLiteSavegameManager.getSavedDifficulty();
+			int moveCount 			= SQLiteSavegameManager.getSavedMoveCount();
+			Integer[] arrangement	= SQLiteSavegameManager.getSavedArrangement();
 			initPuzzle(imgResId, difficulty, true, moveCount, arrangement);
 		} else {
 			tryInitPuzzle();
@@ -63,7 +64,6 @@ public class SingleplayerActivity extends AbstractGameActivity implements IPuzzl
 
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-		Log.d("TESTEST", "Godverdomme: " + requestCode + "  " + resultCode);
 		if (resultCode == RESULT_CANCELED) return;
 
 		switch (requestCode) {
@@ -149,12 +149,13 @@ public class SingleplayerActivity extends AbstractGameActivity implements IPuzzl
 		super.onPause();
 
 		if(model != null && model.isShuffled()) {	// saving the game only makes sense if it has been shuffled
-			savegameManager.save(
-					model.getImageResourceId(),
-					model.getDifficulty(),
-					model.getArrangement(),
-					model.getMoveCount()
-			);
+
+            SQLiteSavegameManager.saveGame(
+                    model.getImageResourceId(),
+                    model.getDifficulty(),
+                    model.getArrangement(),
+                    model.getMoveCount()
+            );
 		}
 	}
 

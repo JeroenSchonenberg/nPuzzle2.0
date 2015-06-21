@@ -14,7 +14,7 @@ import com.squareup.picasso.Picasso;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import nl.han.ica.mad.s478416.npuzzle.R;
-import nl.han.ica.mad.s478416.npuzzle.SavegameManager;
+import nl.han.ica.mad.s478416.npuzzle.SavegameSQLiteManager;
 import nl.han.ica.mad.s478416.npuzzle.model.Difficulty;
 
 public class GameFinishedActivity extends Activity implements View.OnClickListener {
@@ -34,7 +34,7 @@ public class GameFinishedActivity extends Activity implements View.OnClickListen
         setContentView(R.layout.activity_game_finished);
 		ButterKnife.inject(this);
 
-		new SavegameManager(getApplicationContext()).deleteSavegame();
+		new SavegameSQLiteManager(getApplicationContext()).deleteSavegame();
 
 		// RETRIEVE DATA FROM INTENT
         Intent i = getIntent();
